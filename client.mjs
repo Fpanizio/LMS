@@ -11,5 +11,7 @@ const response = await fetch(
     }),
   }
 );
+
+console.log(response);
 const body = await response.text();
 console.log(body);
