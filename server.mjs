@@ -1,37 +1,34 @@
 import { createServer } from "http";
 import { Router } from "./router.mjs";
-
-const HOST = "localhost";
-const PORT = 3000;
+import { customRequest } from "./custom-request.mjs";
+import { HOST, PORT } from "./config.mjs";
+import { customResponse } from "./custom-response.mjs";
 
 const router = new Router();
 
+function postProduto(req, res) {
+  const color = req.query.get("color");
+  res.status(201).json({ name: "example", color });
+}
+
 router.get("/", (req, res) => {
-  res.end("Home page via Router class");
+  res.status(200).end("Home page via Router class");
 });
 
 router.get("/product/laptop", (req, res) => {
-  res.end("Product Laptop page via router object");
+  res.status(200).end("Product Laptop page via router object");
 });
 
-router.post("/product", (req, res) => {
-  res.end(`Product created`);
-});
+router.post("/product", postProduto);
 
-const server = createServer(async (req, res) => {
-  const url = new URL(req.url, `http://${HOST}`);
-
-  const chunks = [];
-  for await (const chunk of req) {
-    chunks.push(chunk);
-  }
-  const body = Buffer.concat(chunks).toString("utf-8");
-  const handler = router.find(req.method, url.pathname);
+const server = createServer(async (request, response) => {
+  const req = await customRequest(request);
+  const res = customResponse(response);
+  const handler = router.find(req.method, req.pathname);
   if (handler) {
     return handler(req, res);
   } else {
-    res.statusCode = 404;
-    res.end("Not found");
+    res.status(404).end("Not found");
   }
 });
 

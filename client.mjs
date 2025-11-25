@@ -1,5 +1,7 @@
-const response = await fetch("http://localhost:3000/product/laptop", {
-  method: "GET",
+import { HOST, PORT } from "./config.mjs";
+
+const response = await fetch(`http://${HOST}:${PORT}/product?color=red`, {
+  method: "POST",
   // headers: {
   //   "Content-Type": "application/json",
   // },
