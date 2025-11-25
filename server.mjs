@@ -1,11 +1,24 @@
 import { createServer } from "http";
+import { Router } from "./router.mjs";
 
 const HOST = "localhost";
 const PORT = 3000;
 
+const router = new Router();
+
+router.get("/", (req, res) => {
+  res.end("Home page via Router class");
+});
+
+router.get("/product/laptop", (req, res) => {
+  res.end("Product Laptop page via router object");
+});
+
+router.post("/product", (req, res) => {
+  res.end(`Product created`);
+});
+
 const server = createServer(async (req, res) => {
-  res.statusCode = 200;
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   const url = new URL(req.url, `http://${HOST}`);
 
   const chunks = [];
@@ -13,27 +26,12 @@ const server = createServer(async (req, res) => {
     chunks.push(chunk);
   }
   const body = Buffer.concat(chunks).toString("utf-8");
-
-  if (req.method === "GET" && url.pathname === "/") {
-    res.statusCode = 200;
-    res.setHeader("Content-Type", "text/html; charset=utf-8");
-    res.end(`
-      <html>
-        <head>
-          <title>My Server</title>
-        </head>
-        <body>
-          <h1>Welcome to My Server</h1>
-        </body>
-      </html>
-      `);
-  } else if (req.method === "POST" && url.pathname === "/products") {
-    res.statusCode = 201;
-    res.setHeader("Content-Type", "application/json");
-    res.end("Product created");
+  const handler = router.find(req.method, url.pathname);
+  if (handler) {
+    return handler(req, res);
   } else {
     res.statusCode = 404;
-    res.end("Page Not Found");
+    res.end("Not found");
   }
 });
 
