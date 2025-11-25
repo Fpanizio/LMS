@@ -1,5 +1,15 @@
-const response = await fetch("http://localhost:3000/asdasd", {
-  method: "POST",
-});
-const data = await response.text();
-console.log(data);
+const response = await fetch(
+  "http://localhost:3000/products?color=blue&size=xs",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      username: "user123",
+      password: "securepassword",
+    }),
+  }
+);
+const body = await response.text();
+console.log(body);
