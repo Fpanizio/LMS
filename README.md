@@ -20,6 +20,7 @@ Este projeto é um estudo prático desenvolvido durante o curso de Node.js da Or
 - Request/Response customizados
 - Tratamento de erros centralizado
 - Banco de dados SQLite integrado
+- Sistema de APIs com classes abstratas (CoreProvider, Api)
 
 ---
 
@@ -33,7 +34,8 @@ flowchart TD
     Core --> CustomRes[CustomResponse]
     Router --> Middlewares[Middlewares]
     Router --> Handlers[Route Handlers]
-    Handlers --> Database[Database SQLite]
+    Handlers --> Api[APIs]
+    Api --> Database[Database SQLite]
 ```
 
 ### Fluxo de uma Requisição
@@ -50,6 +52,9 @@ flowchart TD
 
 ```
 LMS/
+├── api/
+│   └── products/
+│       └── index.ts         # API de produtos
 ├── core/
 │   ├── core.ts              # Classe principal do servidor
 │   ├── router.ts            # Sistema de rotas
@@ -61,6 +66,8 @@ LMS/
 │   │   ├── body-json.ts     # Middleware de parse JSON
 │   │   └── logger.ts        # Middleware de logging
 │   └── utils/
+│       ├── abstract.ts      # Classes abstratas CoreProvider e Api
+│       ├── format-data.ts   # Utilitário de formatação de datas
 │       └── route-error.ts   # Classe de erro customizada
 ├── index.ts                 # Entry point do servidor
 ├── client.mjs               # Cliente de teste
