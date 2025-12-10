@@ -9,6 +9,7 @@ import { customRequest } from './http/custom-request.ts';
 import { customResponse } from './http/custom-response.ts';
 import { bodyJson } from './middleware/body-json.ts';
 import { RouteError } from './utils/route-error.ts';
+import { formatDate } from './utils/format-data.ts';
 
 export class Core {
   router: Router;
@@ -42,12 +43,12 @@ export class Core {
       await route.handler(req, res);
     } catch (error) {
       if (error instanceof RouteError) {
-        console.error(`[${error.status}] ${error.message} - ${request.method} ${request.url}`);
+        console.error(`[${formatDate(new Date())}] [${error.status}] ${error.message} - ${request.method} ${request.url}`);
         response.statusCode = error.status;
         response.setHeader('Content-Type', 'application/problem+json');
         response.end(JSON.stringify({ status: response.statusCode, title: error.message }));
       } else {
-        console.error(error);
+        console.error(`[${formatDate(new Date())}] `, error);
         response.statusCode = 500;
         response.setHeader('Content-Type', 'application/problem+json');
         response.end(JSON.stringify({ status: response.statusCode, title: 'Internal server error' }));
