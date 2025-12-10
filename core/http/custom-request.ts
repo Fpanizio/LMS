@@ -4,6 +4,7 @@ export interface CustomRequest extends IncomingMessage {
   query: URLSearchParams;
   pathname: string;
   body: Record<string, any>;
+  params: Record<string, any>;
 }
 
 export async function customRequest(request: IncomingMessage) {
@@ -11,7 +12,7 @@ export async function customRequest(request: IncomingMessage) {
   const url = new URL(req.url || '', 'http://localhost');
   req.query = url.searchParams;
   req.pathname = url.pathname;
-
+  req.params = {};
   const chunks: Buffer[] = [];
   for await (const chunk of req) {
     chunks.push(chunk);

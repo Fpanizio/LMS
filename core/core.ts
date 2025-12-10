@@ -19,12 +19,13 @@ export class Core {
     const req = await customRequest(request);
     const res = customResponse(response);
 
-    const handler = this.router.find(req.method || '', req.pathname);
-    if (handler) {
-      handler(req, res);
-    } else {
-      res.status(404).end('Não encontrada');
+    const matched = this.router.find(req.method || '', req.pathname);
+    if (!matched) {
+      return res.status(404).end('Não encontrada');
     }
+    const { route, params } = matched;
+    req.params = params;
+    await route(req, res);
   };
   init() {
     this.server.listen(3000, () => {
