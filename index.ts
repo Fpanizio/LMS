@@ -71,7 +71,7 @@ core.router.get('/aula', (req, res) => {
 });
 
 core.router.get('/', (req, res) => {
-  res.status(200).end('hello');
+  res.status(200).end('Server LMS is running...');
 });
 
 core.init();

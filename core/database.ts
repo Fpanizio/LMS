@@ -2,7 +2,7 @@ import { DatabaseSync } from 'node:sqlite';
 
 const db = new DatabaseSync('./lms.sqlite');
 
-db.exec(`
+db.exec(/* sql */ `
     PRAGMA foreign_keys = 1;
     PRAGMA journal_mode = DELETE;
     PRAGMA synchronous = NORMAL;
@@ -31,7 +31,7 @@ db.exec(`
 export function criarCurso({ slug, nome, descricao }) {
   try {
     return db
-      .prepare(
+      .prepare(/* sql */
         `
     INSERT OR IGNORE INTO "cursos"
       ("slug", "nome", "descricao")
@@ -49,7 +49,7 @@ export function criarCurso({ slug, nome, descricao }) {
 export function criarAula({ slug, nome, cursoSlug }) {
   try {
     return db
-      .prepare(
+      .prepare(/* sql */
         `
     INSERT OR IGNORE INTO "aulas"
       ("slug", "nome", "curso_id")
@@ -67,7 +67,7 @@ export function criarAula({ slug, nome, cursoSlug }) {
 export function pegarCursos() {
   try {
     return db
-      .prepare(
+      .prepare(/* sql */
         `
       SELECT * FROM "cursos"
     `,
@@ -82,7 +82,7 @@ export function pegarCursos() {
 export function pegarCurso(slug) {
   try {
     return db
-      .prepare(
+      .prepare(/* sql */
         `
       SELECT * FROM "cursos" WHERE "slug" = ?
     `,
@@ -97,7 +97,7 @@ export function pegarCurso(slug) {
 export function pegarAulas(cursoSlug) {
   try {
     return db
-      .prepare(
+      .prepare(/* sql */
         `
       SELECT * FROM "aulas" WHERE "curso_id" = (SELECT "id" FROM "cursos" WHERE "slug" = ?)
     `,
@@ -112,7 +112,7 @@ export function pegarAulas(cursoSlug) {
 export function pegarAula(cursoSlug, aulaSlug) {
   try {
     return db
-      .prepare(
+      .prepare(/* sql */
         `
       SELECT * FROM "aulas" WHERE "curso_id" = (SELECT "id" FROM "cursos" WHERE "slug" = ?) AND "slug" = ?
     `,
