@@ -1,13 +1,14 @@
-import { ProductsApi } from './api/products/index.ts';
 import { Core } from './core/core.ts';
 import { logger } from './core/middleware/logger.ts';
-import { RouteError } from './core/utils/route-error.ts';
+import { AuthApi } from './api/auth/index.ts';
+import { LmsApi } from './api/lms/index.ts';
 
 const core = new Core();
 
 core.router.use([logger]);
 
-new ProductsApi(core).init();
+new AuthApi(core).init();
+new LmsApi(core).init();
 
 core.router.get('/', (req, res) => {
   res.status(200).json({ message: 'Hello World' });
