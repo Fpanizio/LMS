@@ -57,6 +57,27 @@ const functions = {
     const body = await response.json();
     console.log(body);
   },
+
+  async getLesson() {
+    const response = await fetch(base + '/lms/lesson/javascript-completo/funcoes-basico', {
+      method: 'GET',
+    });
+    const body = await response.json();
+    console.log(body);
+  },
+
+
+  async postUser() {
+    const response = await fetch(base + '/auth/user', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name: 'Felipe Panizio', username: 'felipe', email: 'fpanizio@gmail.com', password: '123456' }),
+    });
+    const body = await response.json();
+    console.log(body);
+  },
 }
 
 functions[process.argv[2]]();
