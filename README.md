@@ -53,8 +53,12 @@ flowchart TD
 ```
 LMS/
 ├── api/
-│   └── products/
-│       └── index.ts         # API de produtos
+│   ├── auth/
+│   │   ├── index.ts         # API de autenticação
+│   │   └── tables.ts        # Definição de tabelas de auth
+│   └── lms/
+│       ├── index.ts         # API principal do LMS
+│       └── tables.ts        # Definição de tabelas do LMS
 ├── core/
 │   ├── core.ts              # Classe principal do servidor
 │   ├── router.ts            # Sistema de rotas
