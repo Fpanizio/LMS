@@ -51,7 +51,7 @@ const functions = {
   },
 
   async getCourse() {
-    const response = await fetch(base + '/lms/course/javascript-completo', {
+    const response = await fetch(base + '/lms/course/html-e-css', {
       method: 'GET',
     });
     const body = await response.json();
@@ -59,7 +59,7 @@ const functions = {
   },
 
   async getLesson() {
-    const response = await fetch(base + '/lms/lesson/javascript-completo/funcoes-basico', {
+    const response = await fetch(base + '/lms/lesson/html-e-css/basic-tags', {
       method: 'GET',
     });
     const body = await response.json();
@@ -85,7 +85,35 @@ const functions = {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ courseId: 1, lessonId: 23232 }),
+      body: JSON.stringify({ courseId: 1, lessonId: 1 }),
+    });
+    const body = await response.json();
+    console.log(body);
+  },
+
+  async resetCourse() {
+    const response = await fetch(base + '/lms/course/reset', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ courseId: 1 }),
+    });
+    const body = await response.json();
+    console.log(body);
+  },
+
+  async getCertificates() {
+    const response = await fetch(base + '/lms/certificates/', {
+      method: 'GET',
+    });
+    const body = await response.json();
+    console.log(body);
+  },
+
+  async getCertificate() {
+    const response = await fetch(base + '/lms/certificate/d90f2a4db7e54ff1', {
+      method: 'GET',
     });
     const body = await response.json();
     console.log(body);

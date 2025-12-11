@@ -3,6 +3,8 @@ import { lmsTables } from "./tables.ts";
 import { RouteError } from "../../core/utils/route-error.ts";
 import { LmsQuery } from "./query.ts";
 
+const userId = 1;
+
 export class LmsApi extends Api {
 
     query = new LmsQuery(this.db);
@@ -43,7 +45,13 @@ export class LmsApi extends Api {
             if (!course) {
                 throw new RouteError('Course not found', 404);
             }
-            res.status(200).json({ course, lessons });
+
+            let completed: { lesson_id: number, completed: string }[] = [];
+            if (userId) {
+                completed = this.query.selectLessonsCompleted(userId, course.id);
+            }
+
+            res.status(200).json({ course, lessons, completed });
         },
 
         getLesson: (req, res) => {
@@ -57,22 +65,70 @@ export class LmsApi extends Api {
             const i = nav.findIndex(item => item.slug === lesson.slug);
             const prev = i === 0 ? null : nav.at(i - 1)?.slug;
             const next = nav.at(i + 1)?.slug ?? null;
-            res.status(200).json({ ...lesson, prev, next });
+
+            let completed = '';
+            if (userId) {
+                const lessonCompleted = this.query.selectLessonCompleted(userId, lesson.id);
+                if (lessonCompleted) {
+                    completed = lessonCompleted.completed;
+                }
+            }
+
+
+            res.status(200).json({ ...lesson, completed, prev, next });
         },
 
         postLessonCompleted: (req, res) => {
             try {
 
-                const userId = 1;
                 const { courseId, lessonId } = req.body;
                 const writeResult = this.query.insertLessonCompleted(userId, courseId, lessonId);
                 if (writeResult.changes === 0) {
                     throw new RouteError('Lesson already completed', 400);
                 }
-                res.status(201).json({ title: "Lesson completed" });
+
+                const progress = this.query.selectProgress(userId, courseId);
+                const incompleteLessons = progress.filter(item => !item.completed);
+                if (progress.length > 0 && incompleteLessons.length === 0) {
+                    console.log('generating certificate');
+                    const certificate = this.query.insertCertificate(userId, courseId);
+                    if (!certificate) {
+                        throw new RouteError('Error generating certificate', 400);
+                    }
+                    res.status(201).json({ certificate: certificate?.id ?? null });
+                    return;
+                }
+
+                res.status(201).json({ certificate: null, title: "Lesson completed" });
             } catch (error) {
                 res.status(400).json({ title: "Lesson not found" });
             }
+        },
+
+        resetCourse: (req, res) => {
+            const { courseId } = req.body;
+            const deleteResult = this.query.deleteLessonCompleted(userId, courseId);
+            if (deleteResult.changes === 0) {
+                throw new RouteError('Error resetting course', 400);
+            }
+            res.status(200).json({ title: "Course reset" });
+        },
+
+        getCertificates: (req, res) => {
+            const certificates = this.query.selectCertificates(userId);
+            if (certificates.length === 0) {
+                throw new RouteError('No certificates found', 404);
+            }
+            res.status(200).json(certificates);
+        },
+
+        getCertificate: (req, res) => {
+            const { id } = req.params;
+            const certificate = this.query.selectCertificate(id);
+            if (!certificate) {
+                throw new RouteError('Certificate not found', 404);
+            }
+            res.status(200).json(certificate);
         }
     } satisfies Api['handlers']
 
@@ -86,12 +142,15 @@ export class LmsApi extends Api {
         this.router.post('/lms/course', this.handlers.postCourse);
         this.router.get('/lms/courses', this.handlers.getCourses);
         this.router.get('/lms/course/:slug', this.handlers.getCourse);
+        this.router.delete('/lms/course/reset', this.handlers.resetCourse);
 
         // Lessons
         this.router.post('/lms/lesson', this.handlers.postLesson);
         this.router.get('/lms/lesson/:courseSlug/:lessonSlug', this.handlers.getLesson);
-
-        // Lessons Completed 
         this.router.post('/lms/lesson/completed', this.handlers.postLessonCompleted);
+
+        //certificates
+        this.router.get('/lms/certificates/', this.handlers.getCertificates);
+        this.router.get('/lms/certificate/:id', this.handlers.getCertificate);
     }
 }
