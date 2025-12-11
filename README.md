@@ -55,9 +55,11 @@ LMS/
 ├── api/
 │   ├── auth/
 │   │   ├── index.ts         # API de autenticação
+│   │   ├── query.ts         # Queries de autenticação
 │   │   └── tables.ts        # Definição de tabelas de auth
 │   └── lms/
 │       ├── index.ts         # API principal do LMS
+│       ├── query.ts         # Queries do LMS
 │       └── tables.ts        # Definição de tabelas do LMS
 ├── core/
 │   ├── core.ts              # Classe principal do servidor
