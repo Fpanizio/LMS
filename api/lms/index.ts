@@ -59,6 +59,21 @@ export class LmsApi extends Api {
             const next = nav.at(i + 1)?.slug ?? null;
             res.status(200).json({ ...lesson, prev, next });
         },
+
+        postLessonCompleted: (req, res) => {
+            try {
+
+                const userId = 1;
+                const { courseId, lessonId } = req.body;
+                const writeResult = this.query.insertLessonCompleted(userId, courseId, lessonId);
+                if (writeResult.changes === 0) {
+                    throw new RouteError('Lesson already completed', 400);
+                }
+                res.status(201).json({ title: "Lesson completed" });
+            } catch (error) {
+                res.status(400).json({ title: "Lesson not found" });
+            }
+        }
     } satisfies Api['handlers']
 
     table(): void {
@@ -75,5 +90,8 @@ export class LmsApi extends Api {
         // Lessons
         this.router.post('/lms/lesson', this.handlers.postLesson);
         this.router.get('/lms/lesson/:courseSlug/:lessonSlug', this.handlers.getLesson);
+
+        // Lessons Completed 
+        this.router.post('/lms/lesson/completed', this.handlers.postLessonCompleted);
     }
 }
