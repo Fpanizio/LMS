@@ -18,7 +18,6 @@ const functions = {
     });
     const body = await response.json();
     console.table(body);
-    console.log("------------END------------");
   },
 
   async postLessons() {
@@ -41,7 +40,22 @@ const functions = {
     });
     const body = await response.json();
     console.table(body);
-    console.log("------------END------------");
+  },
+
+  async getCourses() {
+    const response = await fetch(base + '/lms/courses', {
+      method: 'GET',
+    });
+    const body = await response.json();
+    console.log(body);
+  },
+
+  async getCourse() {
+    const response = await fetch(base + '/lms/course/javascript-completo', {
+      method: 'GET',
+    });
+    const body = await response.json();
+    console.log(body);
   },
 }
 

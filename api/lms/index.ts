@@ -1,36 +1,49 @@
 import { Api } from "../../core/utils/abstract.ts";
 import { lmsTables } from "./tables.ts";
 import { RouteError } from "../../core/utils/route-error.ts";
+import { LmsQuery } from "./query.ts";
 
 export class LmsApi extends Api {
 
+    query = new LmsQuery(this.db);
+
     handlers = {
-        postCourses: (req, res) => {
+        postCourse: (req, res) => {
             const { slug, title, description, lessons, hours } = req.body;
-            const writeResult = this.db.query(/* sql */ `
-                INSERT OR IGNORE INTO courses 
-                ("slug", "title", "description", "lessons", "hours") VALUES (?, ?, ?, ?, ?);
-            `).run(slug, title, description, lessons, hours);
+            const writeResult = this.query.insertCourse({ slug, title, description, lessons, hours });
             if (writeResult.changes === 0) {
                 throw new RouteError('Course already exists', 400);
             }
             res.status(201).json({ id: writeResult.lastInsertRowid, title: "Created course" });
         },
-        
-        postLessons: (req, res) => {
+
+        postLesson: (req, res) => {
             const { courseSlug, slug, title, seconds, video, description, order, free } = req.body;
 
-            const writeResult = this.db.query(/* sql */ `
-                INSERT OR IGNORE INTO lessons 
-                ("course_id", "slug", "title", "seconds", "video", "description", "order", "free" )
-                 VALUES ((SELECT "id" FROM "courses" WHERE "slug" = ?), ?, ?, ?, ?, ?, ?, ?);
-            `).run(courseSlug, slug, title, seconds, video, description, order, free);
+            const writeResult = this.query.insertLesson({ courseSlug, slug, title, seconds, video, description, order, free });
 
             if (writeResult.changes === 0) {
                 throw new RouteError('Lesson already exists', 400);
             }
             res.status(201).json({ id: writeResult.lastInsertRowid, title: "Created lesson" });
-        }
+        },
+
+        getCourses: (req, res) => {
+            const courses = this.query.selectCourses();
+            if (courses.length === 0) {
+                throw new RouteError('No courses found', 404);
+            }
+            res.status(200).json(courses);
+        },
+
+        getCourse: (req, res) => {
+            const { slug } = req.params;
+            const course = this.query.selectCourseBySlug(slug);
+            if (!course) {
+                throw new RouteError('Course not found', 404);
+            }
+            res.status(200).json(course);
+        },
     } satisfies Api['handlers']
 
     table(): void {
@@ -39,7 +52,12 @@ export class LmsApi extends Api {
 
     routes(): void {
 
-        this.router.post('/lms/courses', this.handlers.postCourses);
-        this.router.post('/lms/lessons', this.handlers.postLessons);
+        // Courses
+        this.router.post('/lms/course', this.handlers.postCourse);
+        this.router.get('/lms/courses', this.handlers.getCourses);
+        this.router.get('/lms/course/:slug', this.handlers.getCourse);
+
+        // Lessons
+        this.router.post('/lms/lesson', this.handlers.postLesson);
     }
 }
