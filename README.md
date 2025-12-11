@@ -54,30 +54,30 @@ flowchart TD
 LMS/
 ├── api/
 │   ├── auth/
-│   │   ├── index.ts         # API de autenticação
-│   │   ├── query.ts         # Queries de autenticação
-│   │   └── tables.ts        # Definição de tabelas de auth
+│   │   ├── index.ts            # API de autenticação
+│   │   ├── query.ts            # Queries de autenticação
+│   │   └── tables.ts           # Definição de tabelas de auth
 │   └── lms/
-│       ├── index.ts         # API principal do LMS
-│       ├── query.ts         # Queries do LMS
-│       └── tables.ts        # Definição de tabelas do LMS
+│       ├── index.ts            # API principal do LMS
+│       ├── query.ts            # Queries do LMS
+│       └── tables.ts           # Definição de tabelas do LMS
 ├── core/
-│   ├── core.ts              # Classe principal do servidor
-│   ├── router.ts            # Sistema de rotas
-│   ├── database.ts          # Camada de banco de dados
+│   ├── core.ts                 # Classe principal do servidor
+│   ├── router.ts               # Sistema de rotas
+│   ├── database.ts             # Camada de banco de dados
 │   ├── http/
 │   │   ├── custom-request.ts   # Request customizado
 │   │   └── custom-response.ts  # Response customizado
 │   ├── middleware/
-│   │   ├── body-json.ts     # Middleware de parse JSON
-│   │   └── logger.ts        # Middleware de logging
+│   │   ├── body-json.ts        # Middleware de parse JSON
+│   │   └── logger.ts           # Middleware de logging
 │   └── utils/
-│       ├── abstract.ts      # Classes abstratas CoreProvider e Api
-│       ├── format-data.ts   # Utilitário de formatação de datas
-│       └── route-error.ts   # Classe de erro customizada
-├── index.ts                 # Entry point do servidor
-├── client.mjs               # Cliente de teste
-├── lms.sqlite               # Banco de dados SQLite
+│       ├── abstract.ts         # Classes abstratas CoreProvider e Api
+│       ├── format-data.ts      # Utilitário de formatação de datas
+│       └── route-error.ts      # Classe de erro customizada
+├── index.ts                    # Entry point do servidor
+├── client.mjs                  # Cliente de teste
+├── lms.sqlite                  # Banco de dados SQLite
 └── package.json
 ```
 
