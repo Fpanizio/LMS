@@ -102,6 +102,7 @@ LMS/
 │   └── utils/
 │       ├── abstract.ts         # Classes abstratas CoreProvider e Api
 │       ├── format-data.ts      # Utilitário de formatação de datas
+│       ├── parse-cookies.ts    # Utilitário de parse de cookies
 │       └── route-error.ts      # Classe de erro customizada
 ├── index.ts                    # Entry point do servidor
 ├── client.mjs                  # Cliente de teste

@@ -26,11 +26,11 @@ export class AuthApi extends Api {
                 throw new RouteError('User not found, please check your email and password', 404);
             }
 
-            const { sid } = await this.session.create({ userId: user.id, ip: req.ip, ua: req.headers['user-agent'] ?? '' });
+            const { cookie } = await this.session.create({ userId: user.id, ip: req.ip, ua: req.headers['user-agent'] ?? '' });
 
 
-            res.setHeader('Set-Cookie', `sid=${sid}; Path=/`);
-            res.status(200).json({ message: 'Login successful' });
+            res.setCookie(cookie);
+            res.status(200).json({ title: 'Login successful' });
         }
     } satisfies Api['handlers']
     table(): void {

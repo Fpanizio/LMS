@@ -3,6 +3,7 @@ import type { ServerResponse } from 'node:http';
 export interface CustomResponse extends ServerResponse {
   status(code: number): CustomResponse;
   json(data: any): void;
+  setCookie(cookie: string): void;
 }
 
 export function customResponse(response: ServerResponse) {
@@ -19,5 +20,18 @@ export function customResponse(response: ServerResponse) {
       res.status(500).end('error');
     }
   };
+  res.setCookie = (cookie: string) => {
+    const current = res.getHeader('Set-Cookie');
+    if (current === undefined) {
+      res.setHeader('Set-Cookie', [cookie]);
+      return;
+    }
+    if (Array.isArray(current)) {
+      current.push(cookie);
+      res.setHeader('Set-Cookie', current);
+      return;
+    }
+    res.setHeader('Set-Cookie', [String(current), cookie]);
+  }
   return res;
 }
