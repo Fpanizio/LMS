@@ -4,7 +4,7 @@ import { AuthApi } from './api/auth/index.ts';
 import { LmsApi } from './api/lms/index.ts';
 import { readFile } from 'fs/promises';
 import { RouteError } from './core/utils/route-error.ts';
-
+import { sha256 } from './api/auth/utils.ts';
 const core = new Core();
 
 core.router.use([logger]);
@@ -19,13 +19,14 @@ core.router.get('/', async (req, res) => {
 });
 
 core.router.get('/safe', async (req, res) => {
-  const id = req.headers.cookie?.replace(/^sid=/, '');
-  if (!id) {
+  const sid = req.headers.cookie?.replace(/^sid=/, '');
+  if (!sid) {
     throw new RouteError('Not authenticated', 401);
   }
+  const sid_hash = sha256(sid);
   const session = core.db.query(/* sql */ `
     SELECT "user_id" FROM "sessions" WHERE "sid_hash" = ?
-  `).get(id);
+  `).get(sid_hash);
   if (!session) {
     throw new RouteError('User not found', 404);
   }
