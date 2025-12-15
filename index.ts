@@ -19,17 +19,17 @@ core.router.get('/', async (req, res) => {
 });
 
 core.router.get('/safe', async (req, res) => {
-  const id = req.headers.cookie?.match(/sid=(\d+)/)?.[1];
+  const id = req.headers.cookie?.replace(/^sid=/, '');
   if (!id) {
     throw new RouteError('Not authenticated', 401);
   }
-  const user = core.db.query(/* sql */ `
-    SELECT "name","email"  FROM "users" WHERE "id" = ?
+  const session = core.db.query(/* sql */ `
+    SELECT "user_id" FROM "sessions" WHERE "sid_hash" = ?
   `).get(id);
-  if (!user) {
+  if (!session) {
     throw new RouteError('User not found', 404);
   }
-  res.status(200).json(user);
+  res.status(200).json(session);
 });
 
 core.init();
