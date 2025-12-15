@@ -81,13 +81,13 @@
         }
       });
 
-      async function autenticado() {
-        const response = await fetch("/safe");
+      async function authenticated() {
+        const response = await fetch("/auth/session");
         const body = await response.json();
         result.innerText = JSON.stringify(body, null, 2);
       }
 
-      autenticado();
+      authenticated();
     </script>
   </body>
 </html>

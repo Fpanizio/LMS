@@ -28,37 +28,15 @@ Este projeto é um estudo prático desenvolvido durante o curso de Node.js da Or
 ## Arquitetura
 
 ```mermaid
-flowchart TB
-    subgraph Request["Requisição HTTP"]
-        Client([Cliente])
-    end
-
-    subgraph Core["Core"]
-        direction LR
-        CustomReq[CustomRequest]
-        CustomRes[CustomResponse]
-    end
-
-    subgraph Routing["Roteamento"]
-        Router[Router]
-        Middlewares[Middlewares]
-    end
-
-    subgraph Business["Camada de Negócio"]
-        Api[APIs]
-        Query[Queries]
-        Services[Services]
-    end
-
-    subgraph Data["Persistência"]
-        Database[(SQLite)]
-    end
-
-    Client --> Core
-    Core --> Routing
-    Routing --> Business
-    Query --> Database
-    Services --> Database
+flowchart TD
+    A([Cliente]) --> B[Core]
+    B --> C[Router]
+    C --> D[Middlewares]
+    D --> E[API Handler]
+    E --> F[Query / Service]
+    F --> G[(SQLite)]
+    
+    E -.->|response| A
 ```
 
 ### Fluxo de uma Requisição
