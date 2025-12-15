@@ -2,9 +2,11 @@ import { authTables } from "./tables.ts";
 import { AuthQuery } from "./query.ts";
 import { RouteError } from "../../core/utils/route-error.ts";
 import { Api } from "../../core/utils/abstract.ts";
+import { SessionService } from "./services/session.ts";
 
 export class AuthApi extends Api {
     query = new AuthQuery(this.db);
+    session = new SessionService(this.core);
     handlers = {
         postUser: (req, res) => {
             const { name, username, email, password } = req.body;
@@ -15,7 +17,7 @@ export class AuthApi extends Api {
             }
             res.status(201).json({ title: "Created user" });
         },
-        postLogin: (req, res) => {
+        postLogin: async (req, res) => {
             const { email, password } = req.body;
             const user = this.db.query(/* sql */ `
                 SELECT "id", "password_hash" FROM "users" WHERE "email" = ?
@@ -23,8 +25,11 @@ export class AuthApi extends Api {
             if (!user || password !== user.password_hash) {
                 throw new RouteError('User not found, please check your email and password', 404);
             }
-            console.log(user);
-            res.setHeader('Set-Cookie', `sid=${user.id}; Path=/`);
+
+            const { sid_hash } = await this.session.create({ userId: user.id, ip: req.ip, ua: req.headers['user-agent'] ?? '' });
+
+
+            res.setHeader('Set-Cookie', `sid=${sid_hash}; Path=/`);
             res.status(200).json({ message: 'Login successful' });
         }
     } satisfies Api['handlers']
