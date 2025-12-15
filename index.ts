@@ -2,6 +2,8 @@ import { Core } from './core/core.ts';
 import { logger } from './core/middleware/logger.ts';
 import { AuthApi } from './api/auth/index.ts';
 import { LmsApi } from './api/lms/index.ts';
+import { readFile } from 'fs/promises';
+import { RouteError } from './core/utils/route-error.ts';
 
 const core = new Core();
 
@@ -10,8 +12,24 @@ core.router.use([logger]);
 new AuthApi(core).init();
 new LmsApi(core).init();
 
-core.router.get('/', (req, res) => {
-  res.status(200).json({ message: 'Hello World' });
+core.router.get('/', async (req, res) => {
+  const index = await readFile(new URL('./front/index.html', import.meta.url));
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.status(200).end(index);
+});
+
+core.router.get('/safe', async (req, res) => {
+  const id = req.headers.cookie?.match(/sid=(\d+)/)?.[1];
+  if (!id) {
+    throw new RouteError('Not authenticated', 401);
+  }
+  const user = core.db.query(/* sql */ `
+    SELECT "name","email"  FROM "users" WHERE "id" = ?
+  `).get(id);
+  if (!user) {
+    throw new RouteError('User not found', 404);
+  }
+  res.status(200).json(user);
 });
 
 core.init();

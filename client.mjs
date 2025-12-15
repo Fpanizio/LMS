@@ -73,7 +73,7 @@ const functions = {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ name: 'Felipe Panizio', username: 'felipe', email: 'fpanizio@gmail.com', password: '123456' }),
+      body: JSON.stringify({ name: 'Cesar Panizio', username: 'cesar', email: 'cpanizio@gmail.com', password: '123456' }),
     });
     const body = await response.json();
     console.log(body);
