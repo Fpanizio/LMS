@@ -6,7 +6,7 @@
 
 Um mini-framework HTTP construído do zero em **Node.js puro** (sem Express/Fastify), utilizando **TypeScript** e **SQLite nativo**.
 
-> **Estudo baseado no curso [Node.js](https://www.origamid.com/curso/node-js) da [Origamid](https://www.origamid.com/)**
+> **Estudo baseado no curso Node.js da [Origamid](https://www.origamid.com/curso/node-js)**
 
 ---
 
