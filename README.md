@@ -21,21 +21,44 @@ Este projeto é um estudo prático desenvolvido durante o curso de Node.js da Or
 - Tratamento de erros centralizado
 - Banco de dados SQLite integrado
 - Sistema de APIs com classes abstratas (CoreProvider, Api)
+- Sistema de autenticação com sessões
 
 ---
 
 ## Arquitetura
 
 ```mermaid
-flowchart TD
-    Client[Cliente] --> Core[Core]
-    Core --> Router[Router]
-    Core --> CustomReq[CustomRequest]
-    Core --> CustomRes[CustomResponse]
-    Router --> Middlewares[Middlewares]
-    Router --> Handlers[Route Handlers]
-    Handlers --> Api[APIs]
-    Api --> Database[Database SQLite]
+flowchart TB
+    subgraph Request["Requisição HTTP"]
+        Client([Cliente])
+    end
+
+    subgraph Core["Core"]
+        direction LR
+        CustomReq[CustomRequest]
+        CustomRes[CustomResponse]
+    end
+
+    subgraph Routing["Roteamento"]
+        Router[Router]
+        Middlewares[Middlewares]
+    end
+
+    subgraph Business["Camada de Negócio"]
+        Api[APIs]
+        Query[Queries]
+        Services[Services]
+    end
+
+    subgraph Data["Persistência"]
+        Database[(SQLite)]
+    end
+
+    Client --> Core
+    Core --> Routing
+    Routing --> Business
+    Query --> Database
+    Services --> Database
 ```
 
 ### Fluxo de uma Requisição
@@ -56,11 +79,16 @@ LMS/
 │   ├── auth/
 │   │   ├── index.ts            # API de autenticação
 │   │   ├── query.ts            # Queries de autenticação
-│   │   └── tables.ts           # Definição de tabelas de auth
+│   │   ├── services/
+│   │   │   └── session.ts      # Serviço de sessão
+│   │   ├── tables.ts           # Definição de tabelas de auth
+│   │   └── utils.ts            # Utilitários de autenticação
 │   └── lms/
 │       ├── index.ts            # API principal do LMS
 │       ├── query.ts            # Queries do LMS
 │       └── tables.ts           # Definição de tabelas do LMS
+├── front/
+│   └── index.html              # Frontend da aplicação
 ├── core/
 │   ├── core.ts                 # Classe principal do servidor
 │   ├── router.ts               # Sistema de rotas
@@ -86,19 +114,23 @@ LMS/
 ## Como Executar
 
 ### Pré-requisitos
+
 - Node.js 22+ (para suporte a `node:sqlite` nativo)
 
 ### Instalação
+
 ```bash
 npm install
 ```
 
 ### Servidor (com hot-reload)
+
 ```bash
 npm run start
 ```
 
 ### Cliente de teste
+
 ```bash
 npm run client
 ```
@@ -124,4 +156,3 @@ A Origamid é uma plataforma brasileira de cursos de desenvolvimento web com foc
 ## Licença
 
 ISC
-
