@@ -69,6 +69,17 @@ export class AuthApi extends Api {
             res.setHeader('Vary', 'Cookie');
 
             res.status(200).json({ title: 'Logout successful' });
+        },
+        //Ajustar essa parte
+        putUpdatePassword: async (req, res) => {
+            if (!req.session) {
+                throw new RouteError('Unauthorized', 401);
+            }
+            const { password } = req.body;
+            console.log(password);
+            console.log(req.body);
+
+            res.status(200).json({ title: 'test' });
         }
     } satisfies Api['handlers']
     table(): void {
@@ -80,5 +91,6 @@ export class AuthApi extends Api {
         this.router.post('/auth/login', this.handlers.postLogin);
         this.router.get('/auth/session', this.handlers.getSession, [this.auth.guard('user')]);
         this.router.delete('/auth/logout', this.handlers.deleteSession);
+        this.router.put('/auth/update/password', this.handlers.putUpdatePassword, [this.auth.guard('user')]);
     }
 }
