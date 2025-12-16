@@ -1,6 +1,6 @@
 import { Query } from "../../core/utils/abstract.ts";
 
-type UserRole = 'user' | 'editor' | 'admin';
+export type UserRole = 'user' | 'editor' | 'admin';
 
 type UserData = {
     id: number;

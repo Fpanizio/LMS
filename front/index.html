@@ -82,7 +82,7 @@
       });
 
       async function authenticated() {
-        const response = await fetch("/auth/session");
+        const response = await fetch("/lms/course/Html-e-css");
         const body = await response.json();
         result.innerText = JSON.stringify(body, null, 2);
       }

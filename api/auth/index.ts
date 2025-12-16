@@ -34,18 +34,7 @@ export class AuthApi extends Api {
         },
 
         getSession: (req, res) => {
-            const sid = req.cookies[COOKIE_SID_KEY];
-            if (!sid) {
-                throw new RouteError('Not authenticated', 401);
-            }
-            const { valid, cookie, session } = this.session.validate(sid);
-            res.setCookie(cookie);
-            if (!valid || !session) {
-                return res.status(401).json({ title: 'Not authenticated' });
-            }
-            res.setHeader('Cache-Control', 'private, no-store');
-            res.setHeader('Vary', 'Cookie');
-            res.status(200).json(session);
+            
         }
     } satisfies Api['handlers']
     table(): void {
