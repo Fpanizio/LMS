@@ -32,7 +32,11 @@ export class AuthQuery extends Query {
             INSERT OR IGNORE INTO "users" ("name", "username", "email", "role", "password_hash") VALUES (?, ?, ?, ?, ?);
         `).run(name, username, email, role, password_hash);
     }
-
+    selectUser(key: 'email' | 'username', value: string) {
+        return this.db.query(/* sql */ `
+            SELECT "id", "password_hash" FROM "users" WHERE ${key} = ?;
+        `).get(value) as { id: number, password_hash: string } | undefined;
+    }
     insertSession({ sid_hash, user_id, expires_ms, ip, ua }: SessionCreate) {
         return this.db.query(/* sql */ `
             INSERT OR IGNORE INTO "sessions"

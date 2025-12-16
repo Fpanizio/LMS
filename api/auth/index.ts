@@ -4,16 +4,27 @@ import { RouteError } from "../../core/utils/route-error.ts";
 import { Api } from "../../core/utils/abstract.ts";
 import { COOKIE_SID_KEY, SessionService } from "./services/session.ts";
 import { AuthMiddleware } from "./middleware/auth.ts";
+import { Password } from "./utils/password.ts";
 
 export class AuthApi extends Api {
     query = new AuthQuery(this.db);
     session = new SessionService(this.core);
     auth = new AuthMiddleware(this.core);
+    password = new Password('segredo');
 
     handlers = {
-        postUser: (req, res) => {
+        postUser: async (req, res) => {
             const { name, username, email, password } = req.body;
-            const password_hash = password;
+            const emailExists = this.query.selectUser('email', email);
+            if (emailExists) {
+                throw new RouteError('Email already exists', 409);
+            }
+            const usernameExists = this.query.selectUser('username', username);
+            if (usernameExists) {
+                throw new RouteError('Username already exists', 409);
+            }
+
+            const password_hash = await this.password.hash(password);
             const writeResult = this.query.insertUser({ name, username, email, role: 'user', password_hash });
             if (writeResult.changes === 0) {
                 throw new RouteError('User already exists', 400);
@@ -22,11 +33,14 @@ export class AuthApi extends Api {
         },
         postLogin: async (req, res) => {
             const { email, password } = req.body;
-            const user = this.db.query(/* sql */ `
-                SELECT "id", "password_hash" FROM "users" WHERE "email" = ?
-            `).get(email);
-            if (!user || password !== user.password_hash) {
-                throw new RouteError('User not found, please check your email and password', 404);
+            const user = this.query.selectUser('email', email);
+            if (!user) {
+                throw new RouteError('User not found, please check your email and password', 401);
+            }
+
+            const validPassword = await this.password.verify(password, user.password_hash);
+            if (!validPassword) {
+                throw new RouteError('User not found, please check your email and password', 401);
             }
 
             const { cookie } = await this.session.create({ userId: user.id, ip: req.ip, ua: req.headers['user-agent'] ?? '' });

@@ -29,14 +29,22 @@ Este projeto é um estudo prático desenvolvido durante o curso de Node.js da Or
 
 ```mermaid
 flowchart TD
-    A([Cliente]) --> B[Core]
-    B --> C[Router]
-    C --> D[Middlewares]
-    D --> E[API Handler]
-    E --> F[Query / Service]
-    F --> G[(SQLite)]
-    
-    E -.->|response| A
+    A([Cliente])
+
+    subgraph Server[Servidor]
+        B[Core] --> C[Middlewares]
+        C --> D[Router]
+        D --> E[Auth]
+        E --> F[Handler]
+    end
+
+    subgraph Data[Dados]
+        G[Query] --> H[(SQLite)]
+    end
+
+    A --> B
+    F --> G
+    H -.->|response| A
 ```
 
 ### Fluxo de uma Requisição
@@ -45,9 +53,10 @@ flowchart TD
 2. **Core** recebe e transforma em `CustomRequest` / `CustomResponse`
 3. **Middlewares globais** são executados (ex: `bodyJson`, `logger`)
 4. **Router** encontra a rota correspondente (suporta parâmetros dinâmicos)
-5. **Middlewares da rota** são executados
-6. **Handler** processa a requisição e retorna resposta
-7. Em caso de erro, `RouteError` centraliza o tratamento
+5. **Middleware de autenticação** valida sessão do usuário (quando necessário)
+6. **Middlewares da rota** são executados
+7. **Handler** processa a requisição e retorna resposta
+8. Em caso de erro, `RouteError` centraliza o tratamento
 
 ## Estrutura de Pastas
 
@@ -56,11 +65,15 @@ LMS/
 ├── api/
 │   ├── auth/
 │   │   ├── index.ts            # API de autenticação
+│   │   ├── middleware/
+│   │   │   └── auth.ts         # Middleware de autenticação
 │   │   ├── query.ts            # Queries de autenticação
 │   │   ├── services/
 │   │   │   └── session.ts      # Serviço de sessão
 │   │   ├── tables.ts           # Definição de tabelas de auth
-│   │   └── utils.ts            # Utilitários de autenticação
+│   │   └── utils/
+│   │       ├── password.ts     # Utilitários de hash de senha
+│   │       └── utils.ts        # Utilitários gerais de auth
 │   └── lms/
 │       ├── index.ts            # API principal do LMS
 │       ├── query.ts            # Queries do LMS

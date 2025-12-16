@@ -1,6 +1,6 @@
 import { CoreProvider } from "../../../core/utils/abstract.ts";
 import { AuthQuery } from "../query.ts";
-import { randomBytesAsync, sha256 } from "../utils.ts";
+import { randomBytesAsync, sha256 } from "../utils/utils.ts";
 
 const ttlSec = 60 * 60 * 24 * 15;
 const ttlSec5Days = 60 * 60 * 24 * 5;
