@@ -90,15 +90,20 @@
 
     <form id="resetPassword" style="display: none">
       <label for="currentPassword">Senha atual</label>
-      <input type="password" name="password" id="currentPassword" value="" />
+      <input
+        type="password"
+        name="currentPassword"
+        id="currentPassword"
+        value=""
+      />
       <label for="newPassword">Nova Senha</label>
       <input type="password" name="newPassword" id="newPassword" value="" />
       <button type="submit">Resetar Senha</button>
     </form>
 
-    <button id="logout">Sair</button>
-
     <pre id="result"></pre>
+
+    <button id="logout">Sair</button>
 
     <script>
       const form = document.querySelector("#login");
