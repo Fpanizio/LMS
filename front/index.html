@@ -35,18 +35,34 @@
         border: 1px solid #222;
       }
       input {
-        background: linear-gradient(to bottom, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.025));
+        background: linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.05),
+          rgba(255, 255, 255, 0.025)
+        );
       }
       input:focus {
         outline: white;
         border-color: white;
       }
       button {
-        background: linear-gradient(to bottom, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+        background: linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.15),
+          rgba(255, 255, 255, 0.05)
+        );
         cursor: pointer;
       }
       button:hover {
-        background: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+        background: linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.2),
+          rgba(255, 255, 255, 0.1)
+        );
+      }
+      #logout {
+        max-width: 200px;
+        margin: 0 auto;
       }
     </style>
 
@@ -58,11 +74,14 @@
       <button>Logar</button>
     </form>
 
+    <button id="logout">Sair</button>
+
     <pre id="result"></pre>
 
     <script>
       const form = document.querySelector("#login");
       const result = document.querySelector("#result");
+      const logout = document.querySelector("#logout");
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -82,10 +101,20 @@
       });
 
       async function authenticated() {
-        const response = await fetch("/lms/course/Html-e-css");
+        const response = await fetch("/auth/session");
         const body = await response.json();
         result.innerText = JSON.stringify(body, null, 2);
       }
+
+      logout.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const response = await fetch("/auth/logout", {
+          method: "DELETE",
+        });
+        if (response.ok) {
+          window.location.reload();
+        }
+      });
 
       authenticated();
     </script>

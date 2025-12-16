@@ -3,10 +3,13 @@ import { AuthQuery } from "./query.ts";
 import { RouteError } from "../../core/utils/route-error.ts";
 import { Api } from "../../core/utils/abstract.ts";
 import { COOKIE_SID_KEY, SessionService } from "./services/session.ts";
+import { AuthMiddleware } from "./middleware/auth.ts";
 
 export class AuthApi extends Api {
     query = new AuthQuery(this.db);
     session = new SessionService(this.core);
+    auth = new AuthMiddleware(this.core);
+
     handlers = {
         postUser: (req, res) => {
             const { name, username, email, password } = req.body;
@@ -34,7 +37,24 @@ export class AuthApi extends Api {
         },
 
         getSession: (req, res) => {
-            
+            if (!req.session) {
+                throw new RouteError('Unauthorized', 401);
+            }
+            res.status(200).json({ title: "valid session" });
+        },
+
+        deleteSession: (req, res) => {
+            const sid = req.cookies[COOKIE_SID_KEY];
+            if (!sid) {
+                throw new RouteError('Unauthorized', 401);
+            }
+            const { cookie } = this.session.invalidate(sid);
+            res.setCookie(cookie);
+
+            res.setHeader('Cache-Control', 'private, no-store');
+            res.setHeader('Vary', 'Cookie');
+
+            res.status(200).json({ title: 'Logout successful' });
         }
     } satisfies Api['handlers']
     table(): void {
@@ -44,6 +64,7 @@ export class AuthApi extends Api {
     routes(): void {
         this.router.post('/auth/user', this.handlers.postUser);
         this.router.post('/auth/login', this.handlers.postLogin);
-        this.router.get('/auth/session', this.handlers.getSession);
+        this.router.get('/auth/session', this.handlers.getSession, [this.auth.guard('user')]);
+        this.router.delete('/auth/logout', this.handlers.deleteSession);
     }
 }
