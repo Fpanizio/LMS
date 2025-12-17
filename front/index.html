@@ -4,173 +4,238 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tiny LMS</title>
-  </head>
-  <body>
     <style>
+      :root {
+        --bg-primary: #000;
+        --text-primary: #fff;
+        --border-color: #222;
+        --input-bg: linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.05),
+          rgba(255, 255, 255, 0.025)
+        );
+        --btn-bg: linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.15),
+          rgba(255, 255, 255, 0.05)
+        );
+        --btn-hover: linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.2),
+          rgba(255, 255, 255, 0.1)
+        );
+        --max-width: 600px;
+      }
+
       * {
         box-sizing: border-box;
         font-family: monospace;
       }
+
       body {
-        background: black;
-        color: white;
+        background: var(--bg-primary);
+        color: var(--text-primary);
         font-size: 1.125rem;
       }
+
+      .container {
+        max-width: var(--max-width);
+        margin: 0 auto;
+        padding: 1rem;
+      }
+
+      .nav-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+      }
+
       form,
       pre {
-        margin: 0;
-        max-width: 600px;
-        padding: 1rem;
         margin: 0 auto;
+        max-width: var(--max-width);
+        padding: 1rem;
         overflow: auto;
       }
+
       input,
       button {
         display: block;
         width: 100%;
         padding: 0.75rem;
-        margin: 0.5rem 0 1rem 0;
+        margin: 0.5rem 0 1rem;
         border-radius: 8px;
-        color: white;
-        border: 1px solid #222;
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
       }
+
       input {
-        background: linear-gradient(
-          to bottom,
-          rgba(255, 255, 255, 0.05),
-          rgba(255, 255, 255, 0.025)
-        );
+        background: var(--input-bg);
       }
+
       input:focus {
-        outline: white;
-        border-color: white;
+        outline: none;
+        border-color: var(--text-primary);
       }
+
       button {
-        background: linear-gradient(
-          to bottom,
-          rgba(255, 255, 255, 0.15),
-          rgba(255, 255, 255, 0.05)
-        );
+        background: var(--btn-bg);
         cursor: pointer;
       }
+
       button:hover {
-        background: linear-gradient(
-          to bottom,
-          rgba(255, 255, 255, 0.2),
-          rgba(255, 255, 255, 0.1)
-        );
+        background: var(--btn-hover);
       }
-      #logout {
-        margin: 1rem;
-        max-width: 500px;
-        margin: 0 auto;
+
+      .hidden {
+        display: none;
       }
     </style>
+  </head>
+  <body>
+    <nav class="container nav-buttons">
+      <button type="button" data-form="login">Login</button>
+      <button type="button" data-form="resetPassword">Reset Password</button>
+      <button type="button" data-form="forgotPassword">Forgot Password</button>
+      <button type="button" data-form="resetWithToken">Reset with Token</button>
+    </nav>
 
-    <div
-      style="
-        display: flex;
-        gap: 1rem;
-        justify-content: center;
-        margin: 0 auto;
-        max-width: 600px;
-      "
+    <form
+      id="login"
+      class="hidden"
+      data-endpoint="/auth/login"
+      data-method="POST"
     >
-      <button id="btnLogin">Login</button>
-      <button id="btnResetPasswordForm">Reset Password</button>
-    </div>
-
-    <form id="login" style="display: none">
-      <label for="email">Email</label>
-      <input type="email" name="email" id="email" value="panizio@gmail.com" />
-      <label for="password">Senha</label>
-      <input type="password" name="password" id="password" value="123456" />
-      <button>Logar</button>
+      <label for="login-email">Email</label>
+      <input
+        type="email"
+        name="email"
+        id="login-email"
+        value="panizio@gmail.com"
+        required
+      />
+      <label for="login-password">Password</label>
+      <input
+        type="password"
+        name="password"
+        id="login-password"
+        value="123456"
+        required
+      />
+      <button type="submit">Sign In</button>
     </form>
 
-    <form id="resetPassword" style="display: none">
-      <label for="currentPassword">Senha atual</label>
+    <form
+      id="resetPassword"
+      class="hidden"
+      data-endpoint="/auth/password/update"
+      data-method="PUT"
+    >
+      <label for="currentPassword">Current Password</label>
       <input
         type="password"
         name="currentPassword"
         id="currentPassword"
-        value=""
+        required
       />
-      <label for="newPassword">Nova Senha</label>
-      <input type="password" name="newPassword" id="newPassword" value="" />
-      <button type="submit">Resetar Senha</button>
+      <label for="newPassword">New Password</label>
+      <input type="password" name="newPassword" id="newPassword" required />
+      <button type="submit">Reset Password</button>
+    </form>
+
+    <form
+      id="forgotPassword"
+      class="hidden"
+      data-endpoint="/auth/password/forgot"
+      data-method="POST"
+    >
+      <label for="forgot-email">Email</label>
+      <input
+        type="email"
+        name="email"
+        id="forgot-email"
+        value="panizio@gmail.com"
+        required
+      />
+      <button type="submit">Send Recovery Email</button>
+    </form>
+
+    <form
+      id="resetWithToken"
+      class="hidden"
+      data-endpoint="/auth/password/reset"
+      data-method="POST"
+    >
+      <label for="reset-token">Token</label>
+      <input type="text" name="token" id="reset-token" required />
+      <label for="reset-newPassword">New Password</label>
+      <input
+        type="password"
+        name="newPassword"
+        id="reset-newPassword"
+        value="123"
+        required
+      />
+      <button type="submit">Reset Password</button>
     </form>
 
     <pre id="result"></pre>
 
-    <button id="logout">Sair</button>
+    <button id="logout" class="container">Sign Out</button>
 
     <script>
-      const form = document.querySelector("#login");
       const result = document.querySelector("#result");
-      const logout = document.querySelector("#logout");
+      const forms = document.querySelectorAll("form[data-endpoint]");
+      const navButtons = document.querySelectorAll("[data-form]");
 
-      const btnLogin = document.querySelector("#btnLogin");
-      const btnResetPassword = document.querySelector("#btnResetPasswordForm");
-      const formLogin = document.querySelector("#login");
-      const formReset = document.querySelector("#resetPassword");
-
-      form.addEventListener("submit", async (e) => {
+      async function handleFormSubmit(e) {
         e.preventDefault();
-        const data = new FormData(form);
-        const response = await fetch("/auth/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(Object.fromEntries(data)),
-        });
-        const body = await response.json();
-        result.innerText = JSON.stringify(body, null, 2);
-        if (response.ok) {
-          window.location.reload();
-        }
-      });
+        const form = e.target;
+        const { endpoint, method } = form.dataset;
 
-      async function authenticated() {
-        const response = await fetch("/auth/session");
-        const body = await response.json();
-        result.innerText = JSON.stringify(body, null, 2);
+        try {
+          const response = await fetch(endpoint, {
+            method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(Object.fromEntries(new FormData(form))),
+          });
+          const body = await response.json();
+          result.textContent = JSON.stringify(body, null, 2);
+          if (response.ok) window.location.reload();
+        } catch (err) {
+          result.textContent = `Error: ${err.message}`;
+        }
       }
 
-      logout.addEventListener("click", async (e) => {
-        e.preventDefault();
-        const response = await fetch("/auth/logout", {
-          method: "DELETE",
-        });
-        if (response.ok) {
-          window.location.reload();
-        }
-      });
-
-      formReset.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const data = new FormData(formReset);
-        const response = await fetch("/auth/update/password", {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(Object.fromEntries(data)),
-        });
-        const body = await response.json();
-        result.innerText = JSON.stringify(body, null, 2);
-      });
-
-      function showForm(formToShow) {
-        formLogin.style.display = "none";
-        formReset.style.display = "none";
-        formToShow.style.display = "block";
+      function showForm(formId) {
+        forms.forEach((f) => f.classList.add("hidden"));
+        document.getElementById(formId)?.classList.remove("hidden");
       }
 
-      btnLogin.addEventListener("click", () => showForm(formLogin));
-      btnResetPassword.addEventListener("click", () => showForm(formReset));
-      authenticated();
+      async function checkSession() {
+        try {
+          const response = await fetch("/auth/session");
+          const body = await response.json();
+          result.textContent = JSON.stringify(body, null, 2);
+        } catch (err) {
+          result.textContent = `Error: ${err.message}`;
+        }
+      }
+
+      async function handleLogout() {
+        const response = await fetch("/auth/logout", { method: "DELETE" });
+        if (response.ok) window.location.reload();
+      }
+
+      forms.forEach((form) =>
+        form.addEventListener("submit", handleFormSubmit)
+      );
+      navButtons.forEach((btn) =>
+        btn.addEventListener("click", () => showForm(btn.dataset.form))
+      );
+      document.getElementById("logout").addEventListener("click", handleLogout);
+
+      checkSession();
     </script>
   </body>
 </html>

@@ -90,7 +90,7 @@ export class AuthApi extends Api {
     },
 
     //Ajustar essa parte
-    putUpdatePassword: async (req, res) => {
+    passwordUpdate: async (req, res) => {
       const { currentPassword, newPassword } = req.body;
 
       if (!req.session) {
@@ -132,6 +132,46 @@ export class AuthApi extends Api {
       res.setCookie(cookie);
       res.status(200).json({ title: "Password updated" });
     },
+
+    passwordForgot: async (req, res) => {
+      const { email } = req.body;
+      const user = this.query.selectUser("email", email);
+      if (!user) {
+        return res.status(200).json({ title: "verification email sent" });
+      }
+      const { token } = await this.session.resetToken({
+        userId: user.id,
+        ip: req.ip,
+        ua: req.headers["user-agent"] ?? "",
+      });
+
+      const resetLink = `${req.baseUrl}/password/reset/?token=${token}`;
+      const mailContent = {
+        to: user.email,
+        subject: "Reset your password",
+        body: `Click <a href="${resetLink}">here</a> to reset your password`,
+      };
+
+      console.log(mailContent);
+      res.status(200).json({ title: "verification email sent" });
+    },
+    passwordReset: async (req, res) => {
+      const { token, newPassword } = req.body;
+      const reset = this.session.validateToken(token);
+      if (!reset) {
+        throw new RouteError("Invalid token", 400);
+      }
+      const newPasswordHash = await this.password.hash(newPassword);
+      const updatePassword = this.query.updateUser(
+        reset.userId,
+        "password_hash",
+        newPasswordHash
+      );
+      if (updatePassword.changes === 0) {
+        throw new RouteError("Failed to update password", 500);
+      }
+      res.status(200).json({ title: "Password reset successful" });
+    },
   } satisfies Api["handlers"];
   table(): void {
     this.db.exec(authTables);
@@ -144,8 +184,10 @@ export class AuthApi extends Api {
       this.auth.guard("user"),
     ]);
     this.router.delete("/auth/logout", this.handlers.deleteSession);
-    this.router.put("/auth/update/password", this.handlers.putUpdatePassword, [
+    this.router.put("/auth/password/update", this.handlers.passwordUpdate, [
       this.auth.guard("user"),
     ]);
+    this.router.post("/auth/password/reset", this.handlers.passwordReset);
+    this.router.post("/auth/password/forgot", this.handlers.passwordForgot);
   }
 }

@@ -22,4 +22,16 @@ CREATE TABLE IF NOT EXISTS "sessions" (
  ) WITHOUT ROWID, STRICT;
 
  CREATE INDEX IF NOT EXISTS "idx_sessions_USER" ON "sessions" ("user_id");
+
+CREATE TABLE IF NOT EXISTS "resets" (
+  "token_hash" BLOB PRIMARY KEY,
+  "user_id" INTEGER NOT NULL,
+  "created" TEXT NOT NULL DEFAULT (STRFTIME('%s','NOW')),
+  "expires" INTEGER NOT NULL,
+  "ip" TEXT,
+  "ua" TEXT,
+  FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE
+ ) WITHOUT ROWID, STRICT;
+
+ CREATE INDEX IF NOT EXISTS "idx_resets_user" ON "resets" ("user_id");
 `;
