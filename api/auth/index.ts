@@ -188,6 +188,6 @@ export class AuthApi extends Api {
       this.auth.guard("user"),
     ]);
     this.router.post("/auth/password/reset", this.handlers.passwordReset);
-    this.router.post("/auth/password/forgot", this.handlers.passwordForgot);
+    this.router.put("/auth/password/forgot", this.handlers.passwordForgot);
   }
 }
