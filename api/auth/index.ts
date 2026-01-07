@@ -5,6 +5,7 @@ import { Api } from "../../core/utils/abstract.ts";
 import { COOKIE_SID_KEY, SessionService } from "./services/session.ts";
 import { AuthMiddleware } from "./middleware/auth.ts";
 import { Password } from "./utils/password.ts";
+import { v } from "../../core/utils/validate.ts";
 
 export class AuthApi extends Api {
   query = new AuthQuery(this.db);
@@ -14,7 +15,12 @@ export class AuthApi extends Api {
 
   handlers = {
     postUser: async (req, res) => {
-      const { name, username, email, password } = req.body;
+      const { name, username, email, password } = {
+        name: v.string(req.body.name),
+        username: v.username(req.body.username),
+        email: v.email(req.body.email),
+        password: v.password(req.body.password),
+      };
       const emailExists = this.query.selectUser("email", email);
       if (emailExists) {
         throw new RouteError("Email already exists", 409);
@@ -38,7 +44,10 @@ export class AuthApi extends Api {
       res.status(201).json({ title: "Created user" });
     },
     postLogin: async (req, res) => {
-      const { email, password } = req.body;
+      const { email, password } = {
+        email: v.email(req.body.email),
+        password: String(req.body.password),
+      };
       const user = this.query.selectUser("email", email);
       if (!user) {
         throw new RouteError(
@@ -91,7 +100,10 @@ export class AuthApi extends Api {
 
     //Ajustar essa parte
     passwordUpdate: async (req, res) => {
-      const { currentPassword, newPassword } = req.body;
+      const { currentPassword, newPassword } = {
+        currentPassword: v.string(req.body.currentPassword),
+        newPassword: v.password(req.body.newPassword),
+      };
 
       if (!req.session) {
         throw new RouteError("Unauthorized", 401);
@@ -134,7 +146,9 @@ export class AuthApi extends Api {
     },
 
     passwordForgot: async (req, res) => {
-      const { email } = req.body;
+      const { email } = {
+        email: v.email(req.body.email),
+      };
       const user = this.query.selectUser("email", email);
       if (!user) {
         return res.status(200).json({ title: "verification email sent" });
@@ -156,7 +170,10 @@ export class AuthApi extends Api {
       res.status(200).json({ title: "verification email sent" });
     },
     passwordReset: async (req, res) => {
-      const { token, newPassword } = req.body;
+      const { token, newPassword } = {
+        token: v.string(req.body.token),
+        newPassword: v.password(req.body.newPassword),
+      };
       const reset = this.session.validateToken(token);
       if (!reset) {
         throw new RouteError("Invalid token", 400);

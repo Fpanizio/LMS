@@ -53,6 +53,13 @@ function password(x: unknown) {
   return password_re.test(x) ? x : undefined;
 }
 
+/** ensures that the username has more than 3 letters   */
+function username(x: unknown) {
+  const s = string(x);
+  if (s === undefined) return undefined;
+  return s.length >= 3 ? s : undefined;
+}
+
 type Parse<Value> = (x: unknown) => Value | undefined;
 
 function required<Value>(fn: Parse<Value>, error: string) {
@@ -69,6 +76,7 @@ export const v = {
   boolean: required(boolean, 'boolean esperada'),
   object: required(object, 'objeto esperado'),
   email: required(email, 'email inválido'),
+  username: required(username, 'username inválido'),
   password: required(password, 'password inválido'),
   o: {
     string,
@@ -76,6 +84,7 @@ export const v = {
     boolean,
     object,
     email,
+    username,
     password,
   },
 };
