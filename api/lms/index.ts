@@ -5,7 +5,6 @@ import { LmsQuery } from "./query.ts";
 import { AuthMiddleware } from "../auth/middleware/auth.ts";
 import { v } from "../../core/utils/validate.ts";
 
-const userId = 1;
 export class LmsApi extends Api {
 
     query = new LmsQuery(this.db);
@@ -13,6 +12,8 @@ export class LmsApi extends Api {
 
     handlers = {
         postCourse: (req, res) => {
+            if(!req.session) throw new RouteError('Unauthorized', 401);
+
             const { slug, title, description, lessons, hours } = {
                 slug: v.string(req.body.slug),
                 title: v.string(req.body.title),
@@ -28,6 +29,7 @@ export class LmsApi extends Api {
         },
 
         postLesson: (req, res) => {
+            if(!req.session) throw new RouteError('Unauthorized', 401);
             const { courseSlug, slug, title, seconds, video, description, order, free } = {
                 courseSlug: v.string(req.body.courseSlug),
                 slug: v.string(req.body.slug),
@@ -84,8 +86,8 @@ export class LmsApi extends Api {
             const next = nav.at(i + 1)?.slug ?? null;
 
             let completed = '';
-            if (userId) {
-                const lessonCompleted = this.query.selectLessonCompleted(userId, lesson.id);
+            if (req.session) {
+                const lessonCompleted = this.query.selectLessonCompleted(req.session.user_id, lesson.id);
                 if (lessonCompleted) {
                     completed = lessonCompleted.completed;
                 }
@@ -96,22 +98,23 @@ export class LmsApi extends Api {
         },
 
         postLessonCompleted: (req, res) => {
+            if(!req.session) throw new RouteError('Unauthorized', 401);
             try {
 
                 const { courseId, lessonId } = {
                     courseId: v.number(req.body.courseId),
                     lessonId: v.number(req.body.lessonId),
                 };
-                const writeResult = this.query.insertLessonCompleted(userId, courseId, lessonId);
+                const writeResult = this.query.insertLessonCompleted(req.session.user_id, courseId, lessonId);
                 if (writeResult.changes === 0) {
                     throw new RouteError('Lesson already completed', 400);
                 }
 
-                const progress = this.query.selectProgress(userId, courseId);
+                const progress = this.query.selectProgress(req.session.user_id, courseId);
                 const incompleteLessons = progress.filter(item => !item.completed);
                 if (progress.length > 0 && incompleteLessons.length === 0) {
                     console.log('generating certificate');
-                    const certificate = this.query.insertCertificate(userId, courseId);
+                    const certificate = this.query.insertCertificate(req.session.user_id, courseId);
                     if (!certificate) {
                         throw new RouteError('Error generating certificate', 400);
                     }
@@ -126,10 +129,11 @@ export class LmsApi extends Api {
         },
 
         resetCourse: (req, res) => {
+            if(!req.session) throw new RouteError('Unauthorized', 401);
             const { courseId } = {
                 courseId: v.number(req.body.courseId),
             };
-            const deleteResult = this.query.deleteLessonCompleted(userId, courseId);
+            const deleteResult = this.query.deleteLessonCompleted(req.session.user_id, courseId);
             if (deleteResult.changes === 0) {
                 throw new RouteError('Error resetting course', 400);
             }
@@ -137,7 +141,8 @@ export class LmsApi extends Api {
         },
 
         getCertificates: (req, res) => {
-            const certificates = this.query.selectCertificates(userId);
+            if(!req.session) throw new RouteError('Unauthorized', 401);
+            const certificates = this.query.selectCertificates(req.session.user_id);
             if (certificates.length === 0) {
                 throw new RouteError('No certificates found', 404);
             }
@@ -161,18 +166,18 @@ export class LmsApi extends Api {
     routes(): void {
 
         // Courses
-        this.router.post('/lms/course', this.handlers.postCourse);
+        this.router.post('/lms/course', this.handlers.postCourse, [this.auth.guard('admin')]);
         this.router.get('/lms/courses', this.handlers.getCourses);
         this.router.get('/lms/course/:slug', this.handlers.getCourse, [this.auth.optional]);
-        this.router.delete('/lms/course/reset', this.handlers.resetCourse);
+        this.router.delete('/lms/course/reset', this.handlers.resetCourse, [this.auth.guard('user')]);
 
         // Lessons
-        this.router.post('/lms/lesson', this.handlers.postLesson);
-        this.router.get('/lms/lesson/:courseSlug/:lessonSlug', this.handlers.getLesson);
-        this.router.post('/lms/lesson/completed', this.handlers.postLessonCompleted);
+        this.router.post('/lms/lesson', this.handlers.postLesson, [this.auth.guard('admin')]);
+        this.router.get('/lms/lesson/:courseSlug/:lessonSlug', this.handlers.getLesson), [this.auth.optional];
+        this.router.post('/lms/lesson/completed', this.handlers.postLessonCompleted, [this.auth.guard('user')]);
 
         //certificates
-        this.router.get('/lms/certificates/', this.handlers.getCertificates);
+        this.router.get('/lms/certificates/', this.handlers.getCertificates, [this.auth.guard('user')]);
         this.router.get('/lms/certificate/:id', this.handlers.getCertificate);
     }
 }
