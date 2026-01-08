@@ -98,6 +98,7 @@
       <button type="button" data-form="resetPassword">Reset Password</button>
       <button type="button" data-form="forgotPassword">Forgot Password</button>
       <button type="button" data-form="resetWithToken">Reset with Token</button>
+      <button type="button" data-form="uploadFiles">Upload Files</button>
     </nav>
 
     <form
@@ -179,14 +180,20 @@
       <button type="submit">Reset Password</button>
     </form>
 
+    <form id="uploadFiles" class="hidden">
+      <label for="files-input">Select Files</label>
+      <input type="file" name="files" id="files-input" multiple required />
+      <button type="submit">Upload</button>
+    </form>
+
     <pre id="result"></pre>
 
     <button id="logout" class="container">Sign Out</button>
 
     <script>
-      const result = document.querySelector("#result");
-      const forms = document.querySelectorAll("form[data-endpoint]");
-      const navButtons = document.querySelectorAll("[data-form]");
+      const result = document.querySelector('#result');
+      const forms = document.querySelectorAll('form[data-endpoint]');
+      const navButtons = document.querySelectorAll('[data-form]');
 
       async function handleFormSubmit(e) {
         e.preventDefault();
@@ -196,7 +203,7 @@
         try {
           const response = await fetch(endpoint, {
             method,
-            headers: { "Content-Type": "application/json" },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(Object.fromEntries(new FormData(form))),
           });
           const body = await response.json();
@@ -208,13 +215,13 @@
       }
 
       function showForm(formId) {
-        forms.forEach((f) => f.classList.add("hidden"));
-        document.getElementById(formId)?.classList.remove("hidden");
+        forms.forEach((f) => f.classList.add('hidden'));
+        document.getElementById(formId)?.classList.remove('hidden');
       }
 
       async function checkSession() {
         try {
-          const response = await fetch("/auth/session");
+          const response = await fetch('/auth/session');
           const body = await response.json();
           result.textContent = JSON.stringify(body, null, 2);
         } catch (err) {
@@ -223,17 +230,40 @@
       }
 
       async function handleLogout() {
-        const response = await fetch("/auth/logout", { method: "DELETE" });
+        const response = await fetch('/auth/logout', { method: 'DELETE' });
         if (response.ok) window.location.reload();
       }
 
+      async function handleFileUpload(e) {
+        e.preventDefault();
+        const input = document.getElementById('files-input');
+        const files = Array.from(input.files);
+
+        if (!files || files.length === 0) return;
+        console.log('Files:', files);
+
+        for (const file of files) {
+          const response = await fetch('/files', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/octet-stream',
+              'x-filename': file.name,
+            },
+            body: file,
+          });
+        }
+      }
+
       forms.forEach((form) =>
-        form.addEventListener("submit", handleFormSubmit)
+        form.addEventListener('submit', handleFormSubmit)
       );
+      document
+        .getElementById('uploadFiles')
+        .addEventListener('submit', handleFileUpload);
       navButtons.forEach((btn) =>
-        btn.addEventListener("click", () => showForm(btn.dataset.form))
+        btn.addEventListener('click', () => showForm(btn.dataset.form))
       );
-      document.getElementById("logout").addEventListener("click", handleLogout);
+      document.getElementById('logout').addEventListener('click', handleLogout);
 
       checkSession();
     </script>
