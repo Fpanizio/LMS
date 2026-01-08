@@ -1,0 +1,164 @@
+# LMS - Mini-Framework HTTP
+
+[![en](https://img.shields.io/badge/lang-en-blue.svg)](./README.md)
+[![pt-br](https://img.shields.io/badge/lang-pt--br-green.svg)](./README.pt-br.md)
+
+[![Node.js](https://img.shields.io/badge/Node.js-22+-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![SQLite](https://img.shields.io/badge/SQLite-Native-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org/)
+
+Um mini-framework HTTP construído do zero em **Node.js puro** (sem Express/Fastify), utilizando **TypeScript** e **SQLite nativo**.
+
+> **Estudo baseado no curso Node.js da [Origamid](https://www.origamid.com/curso/node-js)**
+
+---
+
+## Visão Geral
+
+Este projeto é um estudo prático desenvolvido durante o curso de Node.js da Origamid. O objetivo é entender como frameworks HTTP funcionam por baixo dos panos, construindo cada peça manualmente:
+
+- Servidor HTTP nativo
+- Sistema de rotas com parâmetros dinâmicos
+- Middlewares (globais e por rota)
+- Request/Response customizados
+- Tratamento de erros centralizado
+- Banco de dados SQLite integrado
+- Sistema de APIs com classes abstratas (CoreProvider, Api)
+- Sistema de autenticação com sessões
+- Upload de arquivos com streaming
+- Validação de dados
+
+---
+
+## Arquitetura
+
+```mermaid
+flowchart TD
+    A([Cliente])
+
+    subgraph Server[Servidor]
+        B[Core] --> C[Middlewares]
+        C --> D[Router]
+        D --> E{APIs}
+        E --> F1[Auth]
+        E --> F2[LMS]
+        E --> F3[Files]
+    end
+
+    subgraph Data[Dados]
+        G[Query] --> H[(SQLite)]
+    end
+
+    A --> B
+    F1 & F2 --> G
+    F3 --> I[/Filesystem/]
+    H -.->|response| A
+```
+
+### Fluxo de uma Requisição
+
+1. **Cliente** envia requisição HTTP
+2. **Core** recebe e transforma em `CustomRequest` / `CustomResponse`
+3. **Middlewares globais** são executados (ex: `bodyJson`, `logger`)
+4. **Router** encontra a rota correspondente (suporta parâmetros dinâmicos)
+5. **Middleware de autenticação** valida sessão do usuário (quando necessário)
+6. **Middlewares da rota** são executados
+7. **Handler** processa a requisição e retorna resposta
+8. Em caso de erro, `RouteError` centraliza o tratamento
+
+## Estrutura de Pastas
+
+```
+LMS/
+├── api/
+│   ├── auth/
+│   │   ├── index.ts            # API de autenticação
+│   │   ├── middleware/
+│   │   │   └── auth.ts         # Middleware de autenticação
+│   │   ├── query.ts            # Queries de autenticação
+│   │   ├── services/
+│   │   │   └── session.ts      # Serviço de sessão
+│   │   ├── tables.ts           # Definição de tabelas de auth
+│   │   └── utils/
+│   │       ├── password.ts     # Utilitários de hash de senha
+│   │       └── utils.ts        # Utilitários gerais de auth
+│   ├── files/
+│   │   ├── index.ts            # API de upload de arquivos
+│   │   └── utils.ts            # Utilitários (mimeTypes, ETag)
+│   └── lms/
+│       ├── index.ts            # API principal do LMS
+│       ├── query.ts            # Queries do LMS
+│       └── tables.ts           # Definição de tabelas do LMS
+├── front/
+│   └── index.html              # Frontend da aplicação
+├── core/
+│   ├── core.ts                 # Classe principal do servidor
+│   ├── router.ts               # Sistema de rotas
+│   ├── database.ts             # Camada de banco de dados
+│   ├── http/
+│   │   ├── custom-request.ts   # Request customizado
+│   │   └── custom-response.ts  # Response customizado
+│   ├── middleware/
+│   │   ├── body-json.ts        # Middleware de parse JSON
+│   │   └── logger.ts           # Middleware de logging
+│   └── utils/
+│       ├── abstract.ts         # Classes abstratas CoreProvider e Api
+│       ├── format-data.ts      # Utilitário de formatação de datas
+│       ├── parse-cookies.ts    # Utilitário de parse de cookies
+│       ├── route-error.ts      # Classe de erro customizada
+│       └── validate.ts         # Utilitário de validação de dados
+├── public/
+│   └── files/                  # Arquivos públicos (uploads)
+├── index.ts                    # Entry point do servidor
+├── client.mjs                  # Cliente de teste
+├── lms.sqlite                  # Banco de dados SQLite
+└── package.json
+```
+
+---
+
+## Como Executar
+
+### Pré-requisitos
+
+- Node.js 22+ (para suporte a `node:sqlite` nativo)
+
+### Instalação
+
+```bash
+npm install
+```
+
+### Servidor (com hot-reload)
+
+```bash
+npm run start
+```
+
+### Cliente de teste
+
+```bash
+npm run client
+```
+
+---
+
+## Tecnologias
+
+- **Node.js 22+** (módulos nativos: `http`, `sqlite`)
+- **TypeScript**
+- **SQLite** (banco de dados embarcado)
+
+---
+
+## Créditos
+
+Este projeto foi desenvolvido como estudo prático durante o curso **[Node.js](https://www.origamid.com/curso/back-end-node-js)** da **[Origamid](https://www.origamid.com/)**.
+
+A Origamid é uma plataforma brasileira de cursos de desenvolvimento web com foco em qualidade e didática.
+
+---
+
+## Licença
+
+ISC

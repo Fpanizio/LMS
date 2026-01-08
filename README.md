@@ -1,39 +1,42 @@
-# LMS - Mini-Framework HTTP
+# LMS - Mini HTTP Framework
+
+[![en](https://img.shields.io/badge/lang-en-blue.svg)](./README.md)
+[![pt-br](https://img.shields.io/badge/lang-pt--br-green.svg)](./README.pt-br.md)
 
 [![Node.js](https://img.shields.io/badge/Node.js-22+-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![SQLite](https://img.shields.io/badge/SQLite-Native-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org/)
 
-Um mini-framework HTTP construído do zero em **Node.js puro** (sem Express/Fastify), utilizando **TypeScript** e **SQLite nativo**.
+A mini HTTP framework built from scratch using **pure Node.js** (no Express/Fastify), with **TypeScript** and **native SQLite**.
 
-> **Estudo baseado no curso Node.js da [Origamid](https://www.origamid.com/curso/node-js)**
-
----
-
-## Visão Geral
-
-Este projeto é um estudo prático desenvolvido durante o curso de Node.js da Origamid. O objetivo é entender como frameworks HTTP funcionam por baixo dos panos, construindo cada peça manualmente:
-
-- Servidor HTTP nativo
-- Sistema de rotas com parâmetros dinâmicos
-- Middlewares (globais e por rota)
-- Request/Response customizados
-- Tratamento de erros centralizado
-- Banco de dados SQLite integrado
-- Sistema de APIs com classes abstratas (CoreProvider, Api)
-- Sistema de autenticação com sessões
-- Upload de arquivos com streaming
-- Validação de dados
+> **Study project based on the Node.js course from [Origamid](https://www.origamid.com/curso/node-js)**
 
 ---
 
-## Arquitetura
+## Overview
+
+This project is a hands-on study developed during the Origamid Node.js course. The goal is to understand how HTTP frameworks work under the hood by building each piece manually:
+
+- Native HTTP server
+- Route system with dynamic parameters
+- Middlewares (global and per-route)
+- Custom Request/Response
+- Centralized error handling
+- Integrated SQLite database
+- API system with abstract classes (CoreProvider, Api)
+- Session-based authentication system
+- File upload with streaming
+- Data validation
+
+---
+
+## Architecture
 
 ```mermaid
 flowchart TD
-    A([Cliente])
+    A([Client])
 
-    subgraph Server[Servidor]
+    subgraph Server[Server]
         B[Core] --> C[Middlewares]
         C --> D[Router]
         D --> E{APIs}
@@ -42,7 +45,7 @@ flowchart TD
         E --> F3[Files]
     end
 
-    subgraph Data[Dados]
+    subgraph Data[Data]
         G[Query] --> H[(SQLite)]
     end
 
@@ -52,87 +55,87 @@ flowchart TD
     H -.->|response| A
 ```
 
-### Fluxo de uma Requisição
+### Request Flow
 
-1. **Cliente** envia requisição HTTP
-2. **Core** recebe e transforma em `CustomRequest` / `CustomResponse`
-3. **Middlewares globais** são executados (ex: `bodyJson`, `logger`)
-4. **Router** encontra a rota correspondente (suporta parâmetros dinâmicos)
-5. **Middleware de autenticação** valida sessão do usuário (quando necessário)
-6. **Middlewares da rota** são executados
-7. **Handler** processa a requisição e retorna resposta
-8. Em caso de erro, `RouteError` centraliza o tratamento
+1. **Client** sends HTTP request
+2. **Core** receives and transforms into `CustomRequest` / `CustomResponse`
+3. **Global middlewares** are executed (e.g., `bodyJson`, `logger`)
+4. **Router** finds the matching route (supports dynamic parameters)
+5. **Auth middleware** validates user session (when required)
+6. **Route middlewares** are executed
+7. **Handler** processes the request and returns response
+8. On error, `RouteError` centralizes handling
 
-## Estrutura de Pastas
+## Folder Structure
 
 ```
 LMS/
 ├── api/
 │   ├── auth/
-│   │   ├── index.ts            # API de autenticação
+│   │   ├── index.ts            # Authentication API
 │   │   ├── middleware/
-│   │   │   └── auth.ts         # Middleware de autenticação
-│   │   ├── query.ts            # Queries de autenticação
+│   │   │   └── auth.ts         # Auth middleware
+│   │   ├── query.ts            # Auth queries
 │   │   ├── services/
-│   │   │   └── session.ts      # Serviço de sessão
-│   │   ├── tables.ts           # Definição de tabelas de auth
+│   │   │   └── session.ts      # Session service
+│   │   ├── tables.ts           # Auth table definitions
 │   │   └── utils/
-│   │       ├── password.ts     # Utilitários de hash de senha
-│   │       └── utils.ts        # Utilitários gerais de auth
+│   │       ├── password.ts     # Password hash utilities
+│   │       └── utils.ts        # General auth utilities
 │   ├── files/
-│   │   ├── index.ts            # API de upload de arquivos
-│   │   └── utils.ts            # Utilitários (mimeTypes, ETag)
+│   │   ├── index.ts            # File upload API
+│   │   └── utils.ts            # Utilities (mimeTypes, ETag)
 │   └── lms/
-│       ├── index.ts            # API principal do LMS
-│       ├── query.ts            # Queries do LMS
-│       └── tables.ts           # Definição de tabelas do LMS
+│       ├── index.ts            # Main LMS API
+│       ├── query.ts            # LMS queries
+│       └── tables.ts           # LMS table definitions
 ├── front/
-│   └── index.html              # Frontend da aplicação
+│   └── index.html              # Application frontend
 ├── core/
-│   ├── core.ts                 # Classe principal do servidor
-│   ├── router.ts               # Sistema de rotas
-│   ├── database.ts             # Camada de banco de dados
+│   ├── core.ts                 # Main server class
+│   ├── router.ts               # Route system
+│   ├── database.ts             # Database layer
 │   ├── http/
-│   │   ├── custom-request.ts   # Request customizado
-│   │   └── custom-response.ts  # Response customizado
+│   │   ├── custom-request.ts   # Custom request
+│   │   └── custom-response.ts  # Custom response
 │   ├── middleware/
-│   │   ├── body-json.ts        # Middleware de parse JSON
-│   │   └── logger.ts           # Middleware de logging
+│   │   ├── body-json.ts        # JSON parse middleware
+│   │   └── logger.ts           # Logging middleware
 │   └── utils/
-│       ├── abstract.ts         # Classes abstratas CoreProvider e Api
-│       ├── format-data.ts      # Utilitário de formatação de datas
-│       ├── parse-cookies.ts    # Utilitário de parse de cookies
-│       ├── route-error.ts      # Classe de erro customizada
-│       └── validate.ts         # Utilitário de validação de dados
+│       ├── abstract.ts         # Abstract classes CoreProvider and Api
+│       ├── format-data.ts      # Date formatting utility
+│       ├── parse-cookies.ts    # Cookie parsing utility
+│       ├── route-error.ts      # Custom error class
+│       └── validate.ts         # Data validation utility
 ├── public/
-│   └── files/                  # Arquivos públicos (uploads)
-├── index.ts                    # Entry point do servidor
-├── client.mjs                  # Cliente de teste
-├── lms.sqlite                  # Banco de dados SQLite
+│   └── files/                  # Public files (uploads)
+├── index.ts                    # Server entry point
+├── client.mjs                  # Test client
+├── lms.sqlite                  # SQLite database
 └── package.json
 ```
 
 ---
 
-## Como Executar
+## Getting Started
 
-### Pré-requisitos
+### Prerequisites
 
-- Node.js 22+ (para suporte a `node:sqlite` nativo)
+- Node.js 22+ (for native `node:sqlite` support)
 
-### Instalação
+### Installation
 
 ```bash
 npm install
 ```
 
-### Servidor (com hot-reload)
+### Server (with hot-reload)
 
 ```bash
 npm run start
 ```
 
-### Cliente de teste
+### Test client
 
 ```bash
 npm run client
@@ -140,22 +143,22 @@ npm run client
 
 ---
 
-## Tecnologias
+## Technologies
 
-- **Node.js 22+** (módulos nativos: `http`, `sqlite`)
+- **Node.js 22+** (native modules: `http`, `sqlite`)
 - **TypeScript**
-- **SQLite** (banco de dados embarcado)
+- **SQLite** (embedded database)
 
 ---
 
-## Créditos
+## Credits
 
-Este projeto foi desenvolvido como estudo prático durante o curso **[Node.js](https://www.origamid.com/curso/back-end-node-js)** da **[Origamid](https://www.origamid.com/)**.
+This project was developed as a hands-on study during the **[Node.js](https://www.origamid.com/curso/back-end-node-js)** course from **[Origamid](https://www.origamid.com/)**.
 
-A Origamid é uma plataforma brasileira de cursos de desenvolvimento web com foco em qualidade e didática.
+Origamid is a Brazilian web development course platform focused on quality and didactics.
 
 ---
 
-## Licença
+## License
 
 ISC
