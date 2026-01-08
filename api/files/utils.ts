@@ -1,3 +1,8 @@
+import { Transform } from 'node:stream';
+import { RouteError } from '../../core/utils/route-error.ts';
+
+let size = 0; // System Zeros
+
 export const mimeType: Record<string, string> = {
   '.ico': 'image/x-icon',
   '.html': 'text/html',
@@ -20,4 +25,16 @@ export function checkEtag(match: string | undefined, etag: string) {
   if (!match) return false;
   const tags = match.split(',').map((x) => x.trim());
   return tags.includes(etag);
+}
+
+export function LimitBytes(bytes: number) {
+  return new Transform({
+    transform(chunk, _, next) {
+      size += chunk.length;
+      if (size > bytes) {
+        throw new RouteError('File too large', 413);
+      }
+      next(null, chunk);
+    },
+  });
 }

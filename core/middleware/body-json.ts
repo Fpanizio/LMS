@@ -1,7 +1,7 @@
 import type { Middleware } from "../router.ts";
 import { RouteError } from "../utils/route-error.ts";
 
-const MAX_SIZE = 5_000_000;
+const MAX_SIZE = 1_000_000;
 
 export const bodyJson: Middleware = async (req, res) => {
   if (
