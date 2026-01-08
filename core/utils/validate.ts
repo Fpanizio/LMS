@@ -1,4 +1,6 @@
-import { RouteError } from "./route-error.ts";
+import { RouteError } from './route-error.ts';
+
+const file_re = /^(?!\.)[A-Za-z0-9._-]+$/;
 
 /** trim e não aceita string vazia */
 function string(x: unknown) {
@@ -55,9 +57,16 @@ function password(x: unknown) {
 
 /** ensures that the username has more than 3 letters   */
 function username(x: unknown) {
+  if (typeof x !== 'string') return undefined;
   const s = string(x);
   if (s === undefined) return undefined;
   return s.length >= 3 ? s : undefined;
+}
+
+/** This function checks whether the input is a valid file string.  */
+function file(x: unknown) {
+  if (typeof x !== 'string') return undefined;
+  return file_re.test(x) ? x : undefined;
 }
 
 type Parse<Value> = (x: unknown) => Value | undefined;
@@ -71,13 +80,14 @@ function required<Value>(fn: Parse<Value>, error: string) {
 }
 
 export const v = {
-  string: required(string, 'string esperada'),
-  number: required(number, 'número esperado'),
-  boolean: required(boolean, 'boolean esperada'),
-  object: required(object, 'objeto esperado'),
-  email: required(email, 'email inválido'),
-  username: required(username, 'username inválido'),
-  password: required(password, 'password inválido'),
+  string: required(string, 'expected string'),
+  number: required(number, 'expected number'),
+  boolean: required(boolean, 'expected boolean'),
+  object: required(object, 'expected object'),
+  email: required(email, 'invalid email'),
+  username: required(username, 'invalid username'),
+  password: required(password, 'invalid password'),
+  file: required(file, 'invalid file'),
   o: {
     string,
     number,
@@ -86,5 +96,6 @@ export const v = {
     email,
     username,
     password,
+    file,
   },
 };
