@@ -27,6 +27,7 @@ Este projeto é um estudo prático desenvolvido durante o curso de Node.js da Or
 - Sistema de autenticação com sessões
 - Upload de arquivos com streaming
 - Validação de dados
+- CRUD completo de cursos e aulas
 
 ---
 
@@ -109,6 +110,8 @@ LMS/
 │       └── validate.ts         # Utilitário de validação de dados
 ├── public/
 │   └── files/                  # Arquivos públicos (uploads)
+├── scripts/
+│   └── seed-users.ts           # Script para popular usuários de teste
 ├── index.ts                    # Entry point do servidor
 ├── client.mjs                  # Cliente de teste
 ├── lms.sqlite                  # Banco de dados SQLite

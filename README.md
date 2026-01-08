@@ -27,6 +27,7 @@ This project is a hands-on study developed during the Origamid Node.js course. T
 - Session-based authentication system
 - File upload with streaming
 - Data validation
+- Full CRUD for courses and lessons
 
 ---
 
@@ -109,6 +110,8 @@ LMS/
 │       └── validate.ts         # Data validation utility
 ├── public/
 │   └── files/                  # Public files (uploads)
+├── scripts/
+│   └── seed-users.ts           # Script to seed test users
 ├── index.ts                    # Server entry point
 ├── client.mjs                  # Test client
 ├── lms.sqlite                  # SQLite database
