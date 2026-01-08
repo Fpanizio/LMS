@@ -81,7 +81,11 @@ export class AuthApi extends Api {
       if (!req.session) {
         throw new RouteError('Unauthorized', 401);
       }
-      res.status(200).json({ title: 'valid session' });
+      const user = this.query.selectUserRole(req.session.user_id);
+      if (!user) {
+        throw new RouteError('User not found', 404);
+      }
+      res.status(200).json({ title: 'valid session', role: user.role });
     },
 
     deleteSession: (req, res) => {
@@ -188,6 +192,18 @@ export class AuthApi extends Api {
       }
       res.status(200).json({ title: 'Password reset successful' });
     },
+
+    searchUsers: (req, res) => {
+      const search = String(req.query.get('s') ?? '');
+      const page = Math.max(1, Number(req.query.get('page')) || 1);
+      const limit = 5;
+
+      const users = this.query.searchUsers(search, page, limit);
+      const { total } = this.query.countUsers(search);
+
+      res.setHeader('x-total-count', total);
+      res.status(200).json(users);
+    },
   } satisfies Api['handlers'];
   table(): void {
     this.db.exec(authTables);
@@ -205,5 +221,8 @@ export class AuthApi extends Api {
     ]);
     this.router.post('/auth/password/reset', this.handlers.passwordReset);
     this.router.put('/auth/password/forgot', this.handlers.passwordForgot);
+    this.router.get('/auth/users/search', this.handlers.searchUsers, [
+      this.auth.guard('admin'),
+    ]);
   }
 }

@@ -11,6 +11,7 @@ type CourseData = {
 }
 
 type CourseCreate = Omit<CourseData, 'id' | 'created'>;
+type CourseUpdate = Partial<CourseCreate> & { slug: string };
 
 type LessonData = {
     id: number;
@@ -26,6 +27,7 @@ type LessonData = {
 }
 
 type LessonCreate = Omit<LessonData, 'id' | 'course_id' | 'created'> & { courseSlug: string };
+type LessonUpdate = Partial<Omit<LessonData, 'id' | 'course_id' | 'created'>> & { id: number };
 
 type CertificateData = {
     id: string;
@@ -51,6 +53,31 @@ export class LmsQuery extends Query {
         `).run(courseSlug, slug, title, seconds, video, description, order, free);
     }
 
+    updateCourse({ slug, title, description, lessons, hours }: CourseUpdate) {
+        return this.db.prepare(/* sql */ `
+            UPDATE "courses" 
+            SET "title" = COALESCE(?, "title"),
+                "description" = COALESCE(?, "description"),
+                "lessons" = COALESCE(?, "lessons"),
+                "hours" = COALESCE(?, "hours")
+            WHERE "slug" = ?;
+        `).run(title, description, lessons, hours, slug);
+    }
+
+    updateLesson({ id, slug, title, seconds, video, description, order, free }: LessonUpdate) {
+        return this.db.prepare(/* sql */ `
+            UPDATE "lessons" 
+            SET "slug" = COALESCE(?, "slug"),
+                "title" = COALESCE(?, "title"),
+                "seconds" = COALESCE(?, "seconds"),
+                "video" = COALESCE(?, "video"),
+                "description" = COALESCE(?, "description"),
+                "order" = COALESCE(?, "order"),
+                "free" = COALESCE(?, "free")
+            WHERE "id" = ?;
+        `).run(slug, title, seconds, video, description, order, free, id);
+    }
+
     selectCourses() {
         return this.db.prepare(/* sql */ `
             SELECT * FROM "courses" ORDER BY "created" ASC LIMIT 100;
@@ -64,6 +91,16 @@ export class LmsQuery extends Query {
 
 
     //Lessons
+    selectAllLessons() {
+        return this.db.prepare(/* sql */ `
+            SELECT l.*, c.slug as courseSlug 
+            FROM "lessons" l
+            JOIN "courses" c ON l.course_id = c.id
+            ORDER BY c.slug, l."order" ASC
+            LIMIT 500;
+        `).all() as (LessonData & { courseSlug: string })[];
+    }
+
     selectLessonsBySlug(slug: string) {
         return this.db.prepare(/* sql */ `
             SELECT * FROM "lessons" WHERE "course_id" = (SELECT "id" FROM "courses" WHERE "slug" = ?) ORDER BY "order" ASC;

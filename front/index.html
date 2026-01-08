@@ -4,268 +4,1387 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tiny LMS</title>
-    <style>
-      :root {
-        --bg-primary: #000;
-        --text-primary: #fff;
-        --border-color: #222;
-        --input-bg: linear-gradient(
-          to bottom,
-          rgba(255, 255, 255, 0.05),
-          rgba(255, 255, 255, 0.025)
-        );
-        --btn-bg: linear-gradient(
-          to bottom,
-          rgba(255, 255, 255, 0.15),
-          rgba(255, 255, 255, 0.05)
-        );
-        --btn-hover: linear-gradient(
-          to bottom,
-          rgba(255, 255, 255, 0.2),
-          rgba(255, 255, 255, 0.1)
-        );
-        --max-width: 600px;
-      }
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header>
+      <h1>✦ Tiny LMS</h1>
+      <button id="theme-toggle" aria-label="Alternar tema">
+        <span class="icon-dark">🌙</span>
+        <span class="icon-light">☀️</span>
+      </button>
+    </header>
 
+    <div class="container">
+      <nav data-role="public">
+        <a href="#/login">Entrar</a>
+        <a href="#/criar-conta">Criar Conta</a>
+      </nav>
+
+      <nav data-role="user">
+        <a href="#/cursos">Cursos</a>
+        <a href="#/certificados">Certificados</a>
+        <a href="#/sair" class="logout">Sair</a>
+      </nav>
+
+      <nav data-role="admin">
+        <a href="#/criar-curso">Cursos</a>
+        <a href="#/criar-aula">Aulas</a>
+        <a href="#/usuarios">Usuários</a>
+        <a href="#/sair" class="logout">Sair</a>
+      </nav>
+
+      <main>
+        <section id="login" data-role="public">
+          <div class="card">
+            <h2>Bem-vindo de volta</h2>
+            <p class="subtitle">Entre com suas credenciais</p>
+            <form>
+              <div class="field">
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" placeholder="seu@email.com" />
+              </div>
+              <div class="field">
+                <label for="password">Senha</label>
+                <input type="password" name="password" id="password" placeholder="••••••••" />
+              </div>
+              <button type="submit">Entrar</button>
+              <a href="#/perdeu" class="link">Esqueceu a senha?</a>
+            </form>
+            <div class="debug-btns">
+              <button type="button" class="btn-debug" data-email="admin@admin.com" data-pass="Admin123456">Admin</button>
+              <button type="button" class="btn-debug" data-email="fpanizio10@gmail.com" data-pass="Aa123456789">User</button>
+            </div>
+          </div>
+        </section>
+
+        <section id="perdeu" data-role="public">
+          <div class="card">
+            <h2>Recuperar Senha</h2>
+            <p class="subtitle">Enviaremos um link de recuperação</p>
+            <form>
+              <div class="field">
+                <label for="email-perdeu">Email</label>
+                <input type="email" name="email" id="email-perdeu" placeholder="seu@email.com" />
+              </div>
+              <button type="submit">Enviar Link</button>
+              <a href="#/login" class="link">Voltar ao login</a>
+            </form>
+          </div>
+        </section>
+
+        <section id="resetar" data-role="public">
+          <div class="card">
+            <h2>Nova Senha</h2>
+            <p class="subtitle">Digite sua nova senha</p>
+            <form>
+              <div class="field">
+                <label for="new_password">Nova Senha</label>
+                <input type="password" name="newPassword" id="new_password" placeholder="••••••••" />
+              </div>
+              <input type="hidden" name="token" />
+              <button type="submit">Redefinir Senha</button>
+            </form>
+          </div>
+        </section>
+
+        <section id="criar-conta" data-role="public">
+          <div class="card">
+            <h2>Criar Conta</h2>
+            <p class="subtitle">Preencha seus dados</p>
+            <form>
+              <div class="field">
+                <label for="username">Username</label>
+                <input type="text" name="username" id="username" placeholder="johndoe" />
+              </div>
+              <div class="field">
+                <label for="email-criar">Email</label>
+                <input type="email" name="email" id="email-criar" placeholder="seu@email.com" />
+              </div>
+              <div class="field">
+                <label for="name">Nome Completo</label>
+                <input type="text" name="name" id="name" placeholder="John Doe" />
+              </div>
+              <div class="field">
+                <label for="password-criar">Senha</label>
+                <input type="password" name="password" id="password-criar" placeholder="••••••••" />
+              </div>
+              <button type="submit">Criar Conta</button>
+              <a href="#/login" class="link">Já tem conta? Entre</a>
+            </form>
+          </div>
+        </section>
+
+        <section id="criar-curso" data-role="admin">
+          <div class="card">
+            <h2>Gerenciar Cursos</h2>
+            <div class="render"></div>
+            <form>
+              <div class="grid-2">
+                <div class="field">
+                  <label for="slug">Slug</label>
+                  <input type="text" name="slug" id="slug" placeholder="meu-curso" />
+                </div>
+                <div class="field">
+                  <label for="title">Título</label>
+                  <input type="text" name="title" id="title" placeholder="Nome do Curso" />
+                </div>
+              </div>
+              <div class="field">
+                <label for="description">Descrição</label>
+                <input type="text" name="description" id="description" placeholder="Sobre o curso..." />
+              </div>
+              <div class="grid-2">
+                <div class="field">
+                  <label for="lessons">Aulas</label>
+                  <input type="number" name="lessons" id="lessons" placeholder="0" />
+                </div>
+                <div class="field">
+                  <label for="hours">Horas</label>
+                  <input type="number" name="hours" id="hours" placeholder="0" />
+                </div>
+              </div>
+              <button type="submit">Salvar Curso</button>
+            </form>
+          </div>
+        </section>
+
+        <section id="criar-aula" data-role="admin">
+          <div class="card">
+            <h2>Gerenciar Aulas</h2>
+            <div class="render"></div>
+            <form>
+              <div class="grid-2">
+                <div class="field">
+                  <label for="course-slug">Curso</label>
+                  <select name="courseSlug" id="course-slug">
+                    <option value="">Selecione o curso...</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="lesson-slug">Slug da Aula</label>
+                  <input type="text" name="slug" id="lesson-slug" placeholder="aula-01" />
+                </div>
+              </div>
+              <div class="field">
+                <label for="lesson-title">Título</label>
+                <input type="text" name="title" id="lesson-title" placeholder="Introdução" />
+              </div>
+              <div class="field">
+                <label for="lesson-description">Descrição</label>
+                <input type="text" name="description" id="lesson-description" placeholder="Sobre a aula..." />
+              </div>
+              <div class="grid-3">
+                <div class="field">
+                  <label for="seconds">Segundos</label>
+                  <input type="number" name="seconds" id="seconds" placeholder="0" />
+                </div>
+                <div class="field">
+                  <label for="order">Ordem</label>
+                  <input type="number" name="order" id="order" placeholder="1" />
+                </div>
+                <div class="field">
+                  <label for="free">Gratuita</label>
+                  <input type="number" name="free" id="free" value="0" />
+                </div>
+              </div>
+              <div class="field">
+                <label for="file">Vídeo</label>
+                <input type="file" name="file" id="file" />
+              </div>
+              <div class="field">
+                <label for="video-path">Caminho do Vídeo</label>
+                <input type="text" name="video" id="video-path" placeholder="files/video.mp4" readonly />
+              </div>
+              <button type="submit">Salvar Aula</button>
+            </form>
+          </div>
+        </section>
+
+        <section id="cursos" data-role="user">
+          <h2>Meus Cursos</h2>
+          <div class="render courses-grid"></div>
+        </section>
+
+        <section id="curso" data-role="user">
+          <div class="render"></div>
+        </section>
+
+        <section id="aula" data-role="user">
+          <div class="render"></div>
+        </section>
+
+        <section id="certificados" data-role="user">
+          <h2>Meus Certificados</h2>
+          <div class="render"></div>
+        </section>
+
+        <section id="usuarios" data-role="admin">
+          <div class="card">
+            <h2>Buscar Usuários</h2>
+            <form class="search-form">
+              <div class="field">
+                <input type="text" name="s" id="s" placeholder="Buscar por nome ou email..." />
+              </div>
+              <input type="hidden" name="page" id="page" value="1" />
+              <button type="submit">Buscar</button>
+            </form>
+            <div class="render"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <style>
       * {
         box-sizing: border-box;
-        font-family: monospace;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --bg: #0a0a0b;
+        --bg-card: #111113;
+        --bg-hover: #1a1a1d;
+        --border: #27272a;
+        --border-hover: #3f3f46;
+        --text: #fafafa;
+        --text-muted: #71717a;
+        --accent: #8b5cf6;
+        --accent-hover: #a78bfa;
+        --success: #22c55e;
+        --error: #ef4444;
+        --radius: 12px;
+        --radius-sm: 8px;
+        --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+        --transition: 0.2s ease;
+      }
+
+      [data-theme="light"] {
+        --bg: #f8f9fa;
+        --bg-card: #ffffff;
+        --bg-hover: #f1f3f4;
+        --border: #e0e0e0;
+        --border-hover: #bdbdbd;
+        --text: #1a1a1a;
+        --text-muted: #6b7280;
+        --accent: #7c3aed;
+        --accent-hover: #6d28d9;
+        --shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
       }
 
       body {
-        background: var(--bg-primary);
-        color: var(--text-primary);
-        font-size: 1.125rem;
+        font-family: 'DM Sans', system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+        min-height: 100vh;
+      }
+
+      header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        padding: 3rem 1rem 2rem;
+        background: linear-gradient(to bottom, #18181b, var(--bg));
+        position: relative;
+      }
+
+      [data-theme="light"] header {
+        background: linear-gradient(to bottom, #e8e8e8, var(--bg));
+      }
+
+      #theme-toggle {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 0.5rem;
+        min-width: auto;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        transition: var(--transition);
+      }
+
+      #theme-toggle:hover {
+        border-color: var(--accent);
+        transform: translateY(-50%) scale(1.1);
+      }
+
+      .icon-light { display: none; }
+      .icon-dark { display: block; }
+
+      [data-theme="light"] .icon-light { display: block; }
+      [data-theme="light"] .icon-dark { display: none; }
+
+      h1 {
+        font-size: 2rem;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        background: linear-gradient(135deg, var(--text), var(--accent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.5rem;
+      }
+
+      .subtitle {
+        color: var(--text-muted);
+        margin-bottom: 2rem;
       }
 
       .container {
-        max-width: var(--max-width);
+        max-width: 640px;
         margin: 0 auto;
-        padding: 1rem;
+        padding: 0 1rem 4rem;
       }
 
-      .nav-buttons {
+      /* Navigation */
+      nav[data-role] {
+        display: none;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 100px;
+        margin-bottom: 2rem;
+      }
+
+      nav[data-role].ativo {
         display: flex;
-        gap: 1rem;
-        justify-content: center;
       }
 
-      form,
-      pre {
-        margin: 0 auto;
-        max-width: var(--max-width);
-        padding: 1rem;
-        overflow: auto;
+      nav a {
+        flex: 1;
+        text-align: center;
+        padding: 0.75rem 1rem;
+        border-radius: 100px;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.875rem;
+        transition: var(--transition);
       }
 
-      input,
-      button {
-        display: block;
+      nav a:hover,
+      nav a.active {
+        color: var(--text);
+        background: var(--bg-hover);
+      }
+
+      nav a.logout {
+        color: var(--error);
+      }
+
+      /* Cards */
+      .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 2rem;
+      }
+
+      /* Forms */
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-muted);
+      }
+
+      input, select {
         width: 100%;
-        padding: 0.75rem;
-        margin: 0.5rem 0 1rem;
-        border-radius: 8px;
-        color: var(--text-primary);
-        border: 1px solid var(--border-color);
+        padding: 0.875rem 1rem;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        color: var(--text);
+        font-size: 1rem;
+        font-family: inherit;
+        transition: var(--transition);
       }
 
-      input {
-        background: var(--input-bg);
+      input::placeholder {
+        color: var(--text-muted);
+        opacity: 0.6;
       }
 
       input:focus {
         outline: none;
-        border-color: var(--text-primary);
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
       }
 
-      button {
-        background: var(--btn-bg);
+      input[type="file"] {
+        padding: 0.75rem;
         cursor: pointer;
       }
 
-      button:hover {
-        background: var(--btn-hover);
+      input[readonly] {
+        background: var(--bg-card);
+        color: var(--text-muted);
+        cursor: not-allowed;
+        opacity: 0.7;
       }
 
-      .hidden {
+      input[type="file"]::file-selector-button {
+        background: var(--bg-hover);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 0.5rem 1rem;
+        color: var(--text);
+        font-family: inherit;
+        cursor: pointer;
+        margin-right: 1rem;
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+
+      .grid-3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1rem;
+      }
+
+      button {
+        padding: 0.875rem 1.5rem;
+        background: var(--accent);
+        border: none;
+        border-radius: var(--radius-sm);
+        color: white;
+        font-size: 1rem;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        transition: var(--transition);
+      }
+
+      button:hover {
+        background: var(--accent-hover);
+        transform: translateY(-1px);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      .link {
+        text-align: center;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.875rem;
+        transition: var(--transition);
+      }
+
+      .link:hover {
+        color: var(--accent);
+      }
+
+      /* Sections */
+      section[data-role] {
         display: none;
       }
-    </style>
-  </head>
-  <body>
-    <nav class="container nav-buttons">
-      <button type="button" data-form="login">Login</button>
-      <button type="button" data-form="resetPassword">Reset Password</button>
-      <button type="button" data-form="forgotPassword">Forgot Password</button>
-      <button type="button" data-form="resetWithToken">Reset with Token</button>
-      <button type="button" data-form="uploadFiles">Upload Files</button>
-    </nav>
 
-    <form
-      id="login"
-      class="hidden"
-      data-endpoint="/auth/login"
-      data-method="POST"
-    >
-      <label for="login-email">Email</label>
-      <input
-        type="email"
-        name="email"
-        id="login-email"
-        value="panizio@gmail.com"
-        required
-      />
-      <label for="login-password">Password</label>
-      <input
-        type="password"
-        name="password"
-        id="login-password"
-        value="Aa123456789"
-        required
-      />
-      <button type="submit">Sign In</button>
-    </form>
+      section[data-role].ativo {
+        display: block;
+        animation: fadeIn 0.3s ease;
+      }
 
-    <form
-      id="resetPassword"
-      class="hidden"
-      data-endpoint="/auth/password/update"
-      data-method="PUT"
-    >
-      <label for="currentPassword">Current Password</label>
-      <input
-        type="password"
-        name="currentPassword"
-        id="currentPassword"
-        required
-      />
-      <label for="newPassword">New Password</label>
-      <input type="password" name="newPassword" id="newPassword" required />
-      <button type="submit">Reset Password</button>
-    </form>
-
-    <form
-      id="forgotPassword"
-      class="hidden"
-      data-endpoint="/auth/password/forgot"
-      data-method="POST"
-    >
-      <label for="forgot-email">Email</label>
-      <input
-        type="email"
-        name="email"
-        id="forgot-email"
-        value="panizio@gmail.com"
-        required
-      />
-      <button type="submit">Send Recovery Email</button>
-    </form>
-
-    <form
-      id="resetWithToken"
-      class="hidden"
-      data-endpoint="/auth/password/reset"
-      data-method="POST"
-    >
-      <label for="reset-token">Token</label>
-      <input type="text" name="token" id="reset-token" required />
-      <label for="reset-newPassword">New Password</label>
-      <input
-        type="password"
-        name="newPassword"
-        id="reset-newPassword"
-        value="123"
-        required
-      />
-      <button type="submit">Reset Password</button>
-    </form>
-
-    <form id="uploadFiles" class="hidden">
-      <label for="files-input">Select Files</label>
-      <input type="file" name="files" id="files-input" multiple required />
-      <button type="submit">Upload</button>
-    </form>
-
-    <pre id="result"></pre>
-
-    <button id="logout" class="container">Sign Out</button>
-
-    <script>
-      const result = document.querySelector('#result');
-      const forms = document.querySelectorAll('form[data-endpoint]');
-      const navButtons = document.querySelectorAll('[data-form]');
-
-      async function handleFormSubmit(e) {
-        e.preventDefault();
-        const form = e.target;
-        const { endpoint, method } = form.dataset;
-
-        try {
-          const response = await fetch(endpoint, {
-            method,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(Object.fromEntries(new FormData(form))),
-          });
-          const body = await response.json();
-          result.textContent = JSON.stringify(body, null, 2);
-          if (response.ok) window.location.reload();
-        } catch (err) {
-          result.textContent = `Error: ${err.message}`;
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
         }
       }
 
-      function showForm(formId) {
-        forms.forEach((f) => f.classList.add('hidden'));
-        document.getElementById(formId)?.classList.remove('hidden');
+      /* Courses Grid */
+      .courses-grid {
+        display: grid;
+        gap: 1rem;
       }
 
-      async function checkSession() {
+      .course-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        transition: var(--transition);
+      }
+
+      .course-card:hover {
+        border-color: var(--border-hover);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+      }
+
+      .course-card h3 {
+        font-size: 1.125rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .course-card p {
+        color: var(--text-muted);
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+      }
+
+      .course-meta {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+
+      .course-meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 0.625rem 1.25rem;
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        color: var(--text);
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: var(--transition);
+      }
+
+      .btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .btn-primary {
+        background: var(--accent);
+        border-color: var(--accent);
+      }
+
+      .btn-primary:hover {
+        background: var(--accent-hover);
+        border-color: var(--accent-hover);
+        color: white;
+      }
+
+      /* Debug Buttons */
+      .debug-btns {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px dashed var(--border);
+      }
+
+      .btn-debug {
+        flex: 1;
+        padding: 0.5rem;
+        font-size: 0.7rem;
+        background: transparent;
+        border: 1px dashed var(--border);
+        color: var(--text-muted);
+        opacity: 0.5;
+      }
+
+      .btn-debug:hover {
+        opacity: 1;
+        border-color: var(--accent);
+        color: var(--accent);
+        background: transparent;
+        transform: none;
+      }
+
+      /* Course Detail */
+      .course-header {
+        text-align: center;
+        padding: 2rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        margin-bottom: 1.5rem;
+      }
+
+      .course-header h2 {
+        margin-bottom: 0.5rem;
+      }
+
+      .course-header p {
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+      }
+
+      /* Lessons List */
+      .lessons-list {
+        list-style: none;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+
+      .lessons-list li {
+        border-bottom: 1px solid var(--border);
+      }
+
+      .lessons-list li:last-child {
+        border-bottom: none;
+      }
+
+      .lessons-list a {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.25rem;
+        color: var(--text);
+        text-decoration: none;
+        transition: var(--transition);
+      }
+
+      .lessons-list a:hover {
+        background: var(--bg-hover);
+      }
+
+      .lesson-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        border: 1px solid var(--border);
+      }
+
+      .status-dot.complete {
+        background: var(--success);
+        border-color: var(--success);
+      }
+
+      /* Lesson View */
+      .lesson-view h2 {
+        margin-bottom: 0.25rem;
+      }
+
+      .breadcrumb {
+        display: flex;
+        gap: 0.5rem;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+      }
+
+      .breadcrumb a {
+        color: var(--text-muted);
+        text-decoration: none;
+      }
+
+      .breadcrumb a:hover {
+        color: var(--accent);
+      }
+
+      .video-container {
+        aspect-ratio: 16/9;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+        margin-bottom: 1rem;
+      }
+
+      video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .lesson-nav {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 1rem;
+        align-items: center;
+      }
+
+      .lesson-nav > *:last-child {
+        justify-self: end;
+      }
+
+      /* Reset Course Button */
+      #resetar-curso {
+        text-align: center;
+        margin-top: 1.5rem;
+      }
+
+      #resetar-curso button {
+        background: transparent;
+        border: 1px solid var(--error);
+        color: var(--error);
+      }
+
+      #resetar-curso button:hover {
+        background: var(--error);
+        color: white;
+      }
+
+      /* Certificates */
+      .certificates-list {
+        list-style: none;
+        display: grid;
+        gap: 1rem;
+      }
+
+      .certificates-list .btn {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        padding: 1rem 1.25rem;
+      }
+
+      /* Users List */
+      .users-list {
+        list-style: none;
+        margin-top: 1.5rem;
+      }
+
+      .users-list li {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 1rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.875rem;
+        color: var(--text-muted);
+      }
+
+      .users-list li span:first-child {
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      /* Pagination */
+      #pages {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1.5rem;
+      }
+
+      #pages button {
+        min-width: auto;
+        padding: 0.5rem 1rem;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        font-size: 0.875rem;
+        color: var(--text);
+      }
+
+      #pages button:hover {
+        border-color: var(--accent);
+        background: var(--bg-hover);
+      }
+
+      /* Search Form */
+      .search-form {
+        flex-direction: row;
+        gap: 0.75rem;
+        margin-bottom: 0;
+      }
+
+      .search-form .field {
+        flex: 1;
+      }
+
+      .search-form button {
+        flex-shrink: 0;
+      }
+
+      /* Status Messages */
+      .ok, .fail {
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.875rem;
+        font-weight: 500;
+        animation: fadeIn 0.3s ease;
+      }
+
+      .ok {
+        background: rgba(34, 197, 94, 0.15);
+        color: var(--success);
+        border: 1px solid rgba(34, 197, 94, 0.3);
+      }
+
+      .fail {
+        background: rgba(239, 68, 68, 0.15);
+        color: var(--error);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+      }
+
+      /* Select */
+      select {
+        cursor: pointer;
+        margin-bottom: 1rem;
+      }
+
+      /* Hidden */
+      .hidden {
+        display: none !important;
+      }
+
+      /* Responsive */
+      @media (max-width: 640px) {
+        .grid-2, .grid-3 {
+          grid-template-columns: 1fr;
+        }
+
+        .search-form {
+          flex-direction: column;
+        }
+
+        nav a {
+          padding: 0.625rem 0.5rem;
+          font-size: 0.8rem;
+        }
+      }
+    </style>
+
+    <script>
+      const esc = (v) =>
+        String(v)
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;')
+          .replaceAll("'", '&#39;');
+
+      const secToMin = (seconds) => {
+        const mm = String(Math.floor(seconds / 60)).padStart(2, '0');
+        const ss = String(Math.floor(seconds % 60)).padStart(2, '0');
+        return `${mm}:${ss}`;
+      };
+
+      const routes = document.querySelectorAll('section[data-role]');
+      const navs = document.querySelectorAll('nav[data-role]');
+
+      function handleUserNav(user) {
+        navs.forEach((nav) => {
+          nav.classList.toggle('ativo', nav.dataset.role === user);
+        });
+      }
+
+      let user;
+      async function getUser() {
+        user = 'public';
         try {
           const response = await fetch('/auth/session');
           const body = await response.json();
-          result.textContent = JSON.stringify(body, null, 2);
-        } catch (err) {
-          result.textContent = `Error: ${err.message}`;
+          if (!response.ok) throw new Error();
+          user = body.role;
+          return user;
+        } catch {
+          return user;
+        } finally {
+          handleUserNav(user);
         }
       }
 
-      async function handleLogout() {
-        const response = await fetch('/auth/logout', { method: 'DELETE' });
-        if (response.ok) window.location.reload();
+      async function router() {
+        if (user === undefined) user = await getUser();
+        const r = location.hash.replace('#', '').split('/').filter(Boolean).shift();
+        const route = document.getElementById(r);
+        routes.forEach((item) => item.classList.remove('ativo'));
+        if (route) {
+          if (user !== route.dataset.role) location.hash = '/login';
+          route.classList.add('ativo');
+          if (typeof data[r] === 'function') data[r](route);
+        } else {
+          if (typeof data[r] === 'function') data[r]();
+        }
       }
 
-      async function handleFileUpload(e) {
-        e.preventDefault();
-        const input = document.getElementById('files-input');
-        const files = Array.from(input.files);
+      window.addEventListener('DOMContentLoaded', router);
+      window.addEventListener('hashchange', router);
 
-        if (!files || files.length === 0) return;
-        console.log('Files:', files);
+      async function getData(url, callback) {
+        const response = await fetch(url);
+          const body = await response.json();
+        callback(body, response);
+      }
 
-        for (const file of files) {
-          const response = await fetch('/files', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/octet-stream',
-              'x-filename': file.name,
-            },
-            body: file,
+      function renderResetCourseButton(courseId) {
+        setTimeout(() => {
+          sendForm('DELETE', '/lms/course/reset', 'resetar-curso', () => location.reload());
+        }, 50);
+
+        return `
+          <div id="resetar-curso">
+            <form>
+              <input name="courseId" type="hidden" value="${esc(courseId)}">
+              <button type="submit">Resetar Progresso</button>
+            </form>
+          </div>
+        `;
+      }
+
+      function renderCompleteButton(courseId, lessonId) {
+        setTimeout(() => {
+          sendForm('POST', '/lms/lesson/completed', 'completar', () => {
+            document.getElementById('completar').innerHTML = '<span></span>';
           });
-        }
+        }, 50);
+
+        return `
+          <div id="completar">
+            <form>
+              <input name="courseId" type="hidden" value="${esc(courseId)}">
+              <input name="lessonId" type="hidden" value="${esc(lessonId)}">
+              <button type="submit" class="btn btn-primary">Completar</button>
+            </form>
+          </div>
+        `;
       }
 
-      forms.forEach((form) =>
-        form.addEventListener('submit', handleFormSubmit)
-      );
-      document
-        .getElementById('uploadFiles')
-        .addEventListener('submit', handleFileUpload);
-      navButtons.forEach((btn) =>
-        btn.addEventListener('click', () => showForm(btn.dataset.form))
-      );
-      document.getElementById('logout').addEventListener('click', handleLogout);
+      const data = {
+        cursos: (route) => {
+          getData('/lms/courses', (courses) => {
+            const render = route.querySelector('.render');
+            render.innerHTML = courses.map(course => `
+              <div class="course-card">
+                <h3>${esc(course.title)}</h3>
+                <p>${esc(course.description)}</p>
+                <div class="course-meta">
+                  <span>📚 ${esc(course.lessons)} aulas</span>
+                  <span>⏱️ ${esc(course.hours)}h</span>
+                </div>
+                <a class="btn" href="#/curso/${esc(course.slug)}">Acessar Curso</a>
+              </div>
+            `).join('');
+          });
+        },
 
-      checkSession();
+        curso: (route) => {
+          const [_, curso] = location.hash.replace('#', '').split('/').filter(Boolean);
+          if (!curso) return;
+
+          getData(`/lms/course/${curso}`, ({ course, lessons, completed }) => {
+            const render = route.querySelector('.render');
+            render.innerHTML = `
+              <div class="course-header">
+                <h2>${esc(course.title)}</h2>
+                <p>${esc(course.description)}</p>
+                <div class="course-meta" style="justify-content: center;">
+                  <span>📚 ${esc(course.lessons)} aulas</span>
+                  <span>⏱️ ${esc(course.hours)}h</span>
+                </div>
+              </div>
+              <ul class="lessons-list">
+                ${lessons.map(lesson => {
+                  const isCompleted = completed.some(x => x.lesson_id == lesson.id);
+                  return `
+                    <li>
+                      <a href="#/aula/${esc(course.slug)}/${esc(lesson.slug)}">
+                        ${esc(lesson.title)}
+                        <span class="lesson-info">
+                          <span>${secToMin(lesson.seconds)}</span>
+                          <span class="status-dot ${isCompleted ? 'complete' : ''}"></span>
+                        </span>
+                      </a>
+                    </li>
+                  `;
+                }).join('')}
+              </ul>
+              ${completed.length > 0 ? renderResetCourseButton(course.id) : ''}
+            `;
+          });
+        },
+
+        aula: (route) => {
+          const [_, curso, aula] = location.hash.replace('#', '').split('/').filter(Boolean);
+          if (!curso || !aula) return;
+
+          getData(`/lms/lesson/${curso}/${aula}`, (lesson) => {
+            const render = route.querySelector('.render');
+            render.innerHTML = `
+              <div class="lesson-view">
+                <h2>${esc(lesson.title)}</h2>
+                <div class="breadcrumb">
+                  <a href="#/cursos">Cursos</a> /
+                  <a href="#/curso/${curso}">${curso}</a>
+                </div>
+                <div class="video-container">
+                  <video preload="metadata" src="/${lesson.video}" controls></video>
+                </div>
+                <nav class="lesson-nav">
+                  ${lesson.prev ? `<a class="btn" href="#/aula/${curso}/${lesson.prev}">← Anterior</a>` : '<span></span>'}
+                  ${lesson.completed ? '<span></span>' : renderCompleteButton(lesson.course_id, lesson.id)}
+                  ${lesson.next ? `<a class="btn" href="#/aula/${curso}/${lesson.next}">Próxima →</a>` : '<span></span>'}
+                </nav>
+              </div>
+            `;
+          });
+        },
+
+        certificados: (route) => {
+          getData('/lms/certificates', (certificates) => {
+            if (!Array.isArray(certificates)) return;
+            const render = route.querySelector('.render');
+            render.innerHTML = `
+              <ul class="certificates-list">
+                ${certificates.map(cert => `
+                  <li>
+                    <a class="btn" target="_blank" href="/lms/certificate/${cert.id}">
+                      ${esc(cert.title)}
+                      <span>${cert.completed.slice(0, 10).split('-').reverse().join('/')}</span>
+                    </a>
+                  </li>
+                `).join('')}
+              </ul>
+            `;
+          });
+        },
+
+        sair: async () => {
+          await fetch('/auth/logout', { method: 'DELETE' });
+          user = 'public';
+          location.hash = '/login';
+          handleUserNav(user);
+        },
+
+        resetar: () => {
+          const query = location.hash.split('=');
+          if (query[1]) {
+            const token = document.querySelector('input[name="token"]');
+            if (token) token.value = query[1];
+          }
+        },
+
+        ['criar-curso']: (route) => {
+          getData('/lms/courses', (courses) => {
+            const render = route.querySelector('.render');
+            const form = route.querySelector('form');
+            let selectedCourse = null;
+
+            const select = document.createElement('select');
+            select.innerHTML = '<option value="">+ Novo curso</option>';
+            courses.forEach((course, i) => {
+              select.innerHTML += `<option value="${i}">${course.slug}</option>`;
+            });
+
+            select.addEventListener('change', () => {
+              if (select.value === '') {
+                selectedCourse = null;
+                form.reset();
+              } else {
+                selectedCourse = courses[select.value];
+                Object.keys(selectedCourse).forEach(key => {
+                  const input = form.querySelector(`[name="${key}"]`);
+                  if (input) input.value = selectedCourse[key];
+                });
+              }
+            });
+
+            form.addEventListener('submit', async (e) => {
+              e.preventDefault();
+              const formData = new FormData(form);
+              const badge = document.createElement('div');
+
+              try {
+                const isUpdate = selectedCourse !== null;
+                const url = isUpdate ? `/lms/course/${selectedCourse.slug}` : '/lms/course';
+                const method = isUpdate ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                  method,
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(Object.fromEntries(formData)),
+                });
+
+                const body = await response.json();
+                if (!response.ok) throw new Error(body?.title || 'Erro');
+
+                badge.textContent = isUpdate ? 'Curso atualizado!' : 'Curso criado!';
+                badge.className = 'ok';
+                location.reload();
+              } catch (err) {
+                badge.textContent = err.message || 'Erro';
+                badge.className = 'fail';
+              } finally {
+                form.appendChild(badge);
+                setTimeout(() => badge.remove(), 2000);
+              }
+            });
+
+            render.innerHTML = '';
+            render.appendChild(select);
+          });
+        },
+
+        ['criar-aula']: (route) => {
+          const render = route.querySelector('.render');
+          const form = route.querySelector('form');
+          const courseSelect = form.querySelector('#course-slug');
+          let selectedLesson = null;
+
+          // Buscar cursos para popular o select
+          getData('/lms/courses', (courses) => {
+            courseSelect.innerHTML = '<option value="">Selecione o curso...</option>';
+            courses.forEach(course => {
+              courseSelect.innerHTML += `<option value="${esc(course.slug)}">${esc(course.title)}</option>`;
+            });
+          });
+
+          // Buscar aulas para o select de edição
+          getData('/lms/lessons', (lessons) => {
+            const select = document.createElement('select');
+            select.innerHTML = '<option value="">+ Nova aula</option>';
+            lessons.forEach((lesson, i) => {
+              select.innerHTML += `<option value="${i}">${esc(lesson.courseSlug)} - ${esc(lesson.slug)}</option>`;
+            });
+
+            select.addEventListener('change', () => {
+              if (select.value === '') {
+                selectedLesson = null;
+                form.reset();
+                // Restaurar opções do select de cursos
+                courseSelect.innerHTML = '<option value="">Selecione o curso...</option>';
+                getData('/lms/courses', (courses) => {
+                  courses.forEach(course => {
+                    courseSelect.innerHTML += `<option value="${esc(course.slug)}">${esc(course.title)}</option>`;
+                  });
+                });
+              } else {
+                selectedLesson = lessons[select.value];
+                Object.keys(selectedLesson).forEach(key => {
+                  const input = form.querySelector(`[name="${key}"]`);
+                  if (input) input.value = selectedLesson[key];
+                });
+              }
+            });
+
+            render.innerHTML = '';
+            render.appendChild(select);
+          });
+
+          form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const badge = document.createElement('div');
+
+            try {
+              const input = form.querySelector('input[type="file"]');
+              const files = input?.files;
+              const formData = new FormData(form);
+
+              if (files?.length > 0) {
+                const res = await fetch('/files', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/octet-stream',
+                    'x-filename': files[0].name,
+                  },
+                  body: files[0],
+                });
+                const upload = await res.json();
+                formData.set('video', upload.path);
+              }
+
+              const isUpdate = selectedLesson !== null;
+              const url = isUpdate ? `/lms/lesson/${selectedLesson.id}` : '/lms/lesson';
+              const method = isUpdate ? 'PUT' : 'POST';
+
+              const response = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(Object.fromEntries(formData)),
+              });
+
+              const body = await response.json();
+              if (!response.ok) throw new Error(body?.title || 'Erro');
+
+              badge.textContent = isUpdate ? 'Aula atualizada!' : 'Aula criada!';
+              badge.className = 'ok';
+              location.reload();
+            } catch (err) {
+              badge.textContent = err.message || 'Erro';
+              badge.className = 'fail';
+            } finally {
+              form.appendChild(badge);
+              setTimeout(() => badge.remove(), 2000);
+            }
+          });
+        },
+
+        usuarios: (route) => {
+          const render = route.querySelector('.render');
+          const form = document.querySelector('#usuarios form');
+
+          const fetchUsers = () => {
+            const formData = new FormData(form);
+            const s = formData.get('s') || '';
+            const page = formData.get('page') || 1;
+            getData(`/auth/users/search?s=${s}&page=${page}`, (users, response) => {
+              const total = Number(response.headers.get('x-total-count'));
+              renderUsers(users, total, render, form);
+            });
+          };
+
+          fetchUsers();
+          form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            fetchUsers();
+          });
+        },
+      };
+
+      function renderUsers(users, total, render, form) {
+        const totalPages = Math.ceil(total / 5);
+        const pageInput = document.getElementById('page');
+
+        let html = `<ul class="users-list">
+          ${users.map(user => `
+            <li>
+              <span>${esc(user.name)}</span>
+              <span>${esc(user.email)}</span>
+            </li>
+          `).join('')}
+        </ul>`;
+
+        if (totalPages > 1) {
+          html += '<nav id="pages">';
+          for (let i = 1; i <= totalPages; i++) {
+            html += `<button type="button" data-page="${i}">${i}</button>`;
+          }
+          html += '</nav>';
+        }
+
+        render.innerHTML = html;
+
+        render.querySelectorAll('#pages button').forEach(btn => {
+          btn.addEventListener('click', () => {
+            pageInput.value = btn.dataset.page;
+            form.requestSubmit();
+          });
+        });
+      }
+
+      // Form Handler
+      async function sendForm(method, url, id, callback) {
+        const form = document.querySelector('#' + id + ' form');
+        form?.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const formData = new FormData(form);
+          let response, body = {};
+          const badge = document.createElement('div');
+
+          try {
+            response = await fetch(url, {
+              method,
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(Object.fromEntries(formData)),
+            });
+            body = await response.json();
+            if (!response.ok) throw new Error();
+            if (typeof callback === 'function') callback(response, body);
+            badge.textContent = 'Sucesso!';
+            badge.className = 'ok';
+          } catch {
+            badge.textContent = body?.title || 'Erro';
+            badge.className = 'fail';
+          } finally {
+            form.appendChild(badge);
+            setTimeout(() => badge.remove(), 2000);
+          }
+        });
+      }
+
+      sendForm('POST', '/auth/login', 'login', async () => {
+        user = await getUser();
+        location.hash = user === 'admin' ? '/criar-curso' : '/cursos';
+      });
+
+      sendForm('POST', '/auth/user', 'criar-conta', () => {
+        location.hash = '/login';
+      });
+
+      sendForm('PUT', '/auth/password/forgot', 'perdeu');
+      sendForm('POST', '/auth/password/reset', 'resetar');
+
+      // Debug Quick Login
+      document.querySelectorAll('.btn-debug').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const email = btn.dataset.email;
+          const pass = btn.dataset.pass;
+          document.getElementById('email').value = email;
+          document.getElementById('password').value = pass;
+          document.querySelector('#login form').requestSubmit();
+        });
+      });
+
+      // Theme Toggle
+      const themeToggle = document.getElementById('theme-toggle');
+      const html = document.documentElement;
+
+      function setTheme(theme) {
+        html.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+      }
+
+      function initTheme() {
+        const saved = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        setTheme(saved || (prefersDark ? 'dark' : 'light'));
+      }
+
+      themeToggle.addEventListener('click', () => {
+        const current = html.getAttribute('data-theme');
+        setTheme(current === 'dark' ? 'light' : 'dark');
+      });
+
+      initTheme();
     </script>
   </body>
 </html>

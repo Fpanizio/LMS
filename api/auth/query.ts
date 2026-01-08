@@ -125,6 +125,41 @@ export class AuthQuery extends Query {
       .get(user_id) as { role: UserRole } | undefined;
   }
 
+  searchUsers(search: string, page: number, limit: number) {
+    const offset = (page - 1) * limit;
+    const pattern = `%${search}%`;
+    return this.db
+      .prepare(
+        /* sql */ `
+            SELECT "id", "name", "email", "username", "role", "created" 
+            FROM "users" 
+            WHERE "name" LIKE ? OR "email" LIKE ? OR "username" LIKE ?
+            ORDER BY "created" DESC
+            LIMIT ? OFFSET ?;
+        `
+      )
+      .all(pattern, pattern, pattern, limit, offset) as {
+      id: number;
+      name: string;
+      email: string;
+      username: string;
+      role: UserRole;
+      created: string;
+    }[];
+  }
+
+  countUsers(search: string) {
+    const pattern = `%${search}%`;
+    return this.db
+      .prepare(
+        /* sql */ `
+            SELECT COUNT(*) as total FROM "users" 
+            WHERE "name" LIKE ? OR "email" LIKE ? OR "username" LIKE ?;
+        `
+      )
+      .get(pattern, pattern, pattern) as { total: number };
+  }
+
   updateUser(user_id: number, key: "password_hash" | "email", value: string) {
     return this.db
       .query(

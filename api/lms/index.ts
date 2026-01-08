@@ -76,12 +76,85 @@ export class LmsApi extends Api {
         .json({ id: writeResult.lastInsertRowid, title: 'Created lesson' });
     },
 
+    putCourse: (req, res) => {
+      if (!req.session) throw new RouteError('Unauthorized', 401);
+
+      const { slug } = req.params;
+      const { title, description, lessons, hours } = {
+        title: req.body.title ? v.string(req.body.title) : undefined,
+        description: req.body.description ? v.string(req.body.description) : undefined,
+        lessons: req.body.lessons ? v.number(req.body.lessons) : undefined,
+        hours: req.body.hours ? v.number(req.body.hours) : undefined,
+      };
+
+      const course = this.query.selectCourseBySlug(slug);
+      if (!course) {
+        throw new RouteError('Course not found', 404);
+      }
+
+      const writeResult = this.query.updateCourse({
+        slug,
+        title,
+        description,
+        lessons,
+        hours,
+      });
+
+      if (writeResult.changes === 0) {
+        throw new RouteError('Failed to update course', 400);
+      }
+
+      res.status(200).json({ title: 'Course updated' });
+    },
+
+    putLesson: (req, res) => {
+      if (!req.session) throw new RouteError('Unauthorized', 401);
+
+      const { id } = req.params;
+      const lessonId = v.number(id);
+
+      const { slug, title, seconds, video, description, order, free } = {
+        slug: req.body.slug ? v.string(req.body.slug) : undefined,
+        title: req.body.title ? v.string(req.body.title) : undefined,
+        seconds: req.body.seconds ? v.number(req.body.seconds) : undefined,
+        video: req.body.video ? v.string(req.body.video) : undefined,
+        description: req.body.description ? v.string(req.body.description) : undefined,
+        order: req.body.order ? v.number(req.body.order) : undefined,
+        free: req.body.free !== undefined ? v.number(req.body.free) : undefined,
+      };
+
+      const writeResult = this.query.updateLesson({
+        id: lessonId,
+        slug,
+        title,
+        seconds,
+        video,
+        description,
+        order,
+        free,
+      });
+
+      if (writeResult.changes === 0) {
+        throw new RouteError('Lesson not found', 404);
+      }
+
+      res.status(200).json({ title: 'Lesson updated' });
+    },
+
     getCourses: (req, res) => {
       const courses = this.query.selectCourses();
       if (courses.length === 0) {
         throw new RouteError('No courses found', 404);
       }
       res.status(200).json(courses);
+    },
+
+    getLessons: (req, res) => {
+      const lessons = this.query.selectAllLessons();
+      if (lessons.length === 0) {
+        throw new RouteError('No lessons found', 404);
+      }
+      res.status(200).json(lessons);
     },
 
     getCourse: (req, res) => {
@@ -215,12 +288,21 @@ export class LmsApi extends Api {
     this.router.get('/lms/course/:slug', this.handlers.getCourse, [
       this.auth.optional,
     ]);
+    this.router.put('/lms/course/:slug', this.handlers.putCourse, [
+      this.auth.guard('admin'),
+    ]);
     this.router.delete('/lms/course/reset', this.handlers.resetCourse, [
       this.auth.guard('user'),
     ]);
 
     // Lessons
+    this.router.get('/lms/lessons', this.handlers.getLessons, [
+      this.auth.guard('admin'),
+    ]);
     this.router.post('/lms/lesson', this.handlers.postLesson, [
+      this.auth.guard('admin'),
+    ]);
+    this.router.put('/lms/lesson/:id', this.handlers.putLesson, [
       this.auth.guard('admin'),
     ]);
     this.router.get(
@@ -235,7 +317,7 @@ export class LmsApi extends Api {
     );
 
     //certificates
-    this.router.get('/lms/certificates/', this.handlers.getCertificates, [
+    this.router.get('/lms/certificates', this.handlers.getCertificates, [
       this.auth.guard('user'),
     ]);
     this.router.get('/lms/certificate/:id', this.handlers.getCertificate);

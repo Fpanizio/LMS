@@ -75,7 +75,7 @@ export class FilesApi extends Api {
       try {
         await pipeline(req, LimitBytes(MAX_SIZE), writeStream);
         await rename(tempPath, writePath);
-        res.status(201).end('Ok');
+        res.status(201).json({ path: `files/${filename}` });
       } catch (error) {
         if (error instanceof RouteError) {
           throw new RouteError(error.message, error.status);
