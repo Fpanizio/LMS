@@ -22,6 +22,8 @@ Este projeto é um estudo prático desenvolvido durante o curso de Node.js da Or
 - Banco de dados SQLite integrado
 - Sistema de APIs com classes abstratas (CoreProvider, Api)
 - Sistema de autenticação com sessões
+- Upload de arquivos com streaming
+- Validação de dados
 
 ---
 
@@ -34,8 +36,10 @@ flowchart TD
     subgraph Server[Servidor]
         B[Core] --> C[Middlewares]
         C --> D[Router]
-        D --> E[Auth]
-        E --> F[Handler]
+        D --> E{APIs}
+        E --> F1[Auth]
+        E --> F2[LMS]
+        E --> F3[Files]
     end
 
     subgraph Data[Dados]
@@ -43,7 +47,8 @@ flowchart TD
     end
 
     A --> B
-    F --> G
+    F1 & F2 --> G
+    F3 --> I[/Filesystem/]
     H -.->|response| A
 ```
 
@@ -74,6 +79,9 @@ LMS/
 │   │   └── utils/
 │   │       ├── password.ts     # Utilitários de hash de senha
 │   │       └── utils.ts        # Utilitários gerais de auth
+│   ├── files/
+│   │   ├── index.ts            # API de upload de arquivos
+│   │   └── utils.ts            # Utilitários (mimeTypes, ETag)
 │   └── lms/
 │       ├── index.ts            # API principal do LMS
 │       ├── query.ts            # Queries do LMS
@@ -94,7 +102,10 @@ LMS/
 │       ├── abstract.ts         # Classes abstratas CoreProvider e Api
 │       ├── format-data.ts      # Utilitário de formatação de datas
 │       ├── parse-cookies.ts    # Utilitário de parse de cookies
-│       └── route-error.ts      # Classe de erro customizada
+│       ├── route-error.ts      # Classe de erro customizada
+│       └── validate.ts         # Utilitário de validação de dados
+├── public/
+│   └── files/                  # Arquivos públicos (uploads)
 ├── index.ts                    # Entry point do servidor
 ├── client.mjs                  # Cliente de teste
 ├── lms.sqlite                  # Banco de dados SQLite
