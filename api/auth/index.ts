@@ -252,16 +252,19 @@ export class AuthApi extends Api {
       res.status(200).json(users);
     },
     deleteUser: async (req, res) => {
-      console.log(req.params);
       if (!req.session) {
         throw new RouteError('Unauthorized', 401);
       }
-      const emailExists = this.query.selectUser('email', req.params.userId);
-      if (!emailExists) {
+      const email = v.email(req.params.email);
+      const userToDelete = this.query.selectUser('email', email);
+      if (!userToDelete) {
         throw new RouteError('User not found', 404);
       }
-      const userId = emailExists.id;
-      const deleteUser = this.query.deleteUser(userId);
+      if (userToDelete.id === req.session.user_id) {
+        throw new RouteError('Cannot delete your own account', 400);
+      }
+      this.session.invalidateAll(userToDelete.id);
+      const deleteUser = this.query.deleteUser(userToDelete.id);
       if (deleteUser.changes === 0) {
         throw new RouteError('Failed to delete user', 500);
       }
@@ -290,7 +293,7 @@ export class AuthApi extends Api {
     this.router.put('/auth/email/update', this.handlers.emailUpdate, [
       this.auth.guard('user'),
     ]);
-    this.router.delete('/auth/user/delete/:userId', this.handlers.deleteUser, [
+    this.router.delete('/auth/user/delete/:email', this.handlers.deleteUser, [
       this.auth.guard('admin'),
     ]);
   }
