@@ -29,6 +29,7 @@
       <nav data-role="user">
         <a href="#/cursos">Cursos</a>
         <a href="#/certificados">Certificados</a>
+        <a href="#/perfil">Perfil</a>
         <a href="#/sair" class="logout">Sair</a>
       </nav>
 
@@ -36,6 +37,7 @@
         <a href="#/criar-curso">Cursos</a>
         <a href="#/criar-aula">Aulas</a>
         <a href="#/usuarios">Usuários</a>
+        <a href="#/perfil">Perfil</a>
         <a href="#/sair" class="logout">Sair</a>
       </nav>
 
@@ -47,18 +49,43 @@
             <form>
               <div class="field">
                 <label for="email">Email</label>
-                <input type="email" name="email" id="email" placeholder="seu@email.com" />
+                <input
+                  type="email"
+                  name="email"
+                  id="email"
+                  placeholder="seu@email.com"
+                />
+                <small class="hint hidden">Email ou senha incorretos</small>
               </div>
               <div class="field">
                 <label for="password">Senha</label>
-                <input type="password" name="password" id="password" placeholder="••••••••" />
+                <input
+                  type="password"
+                  name="password"
+                  id="password"
+                  placeholder="••••••••"
+                />
               </div>
               <button type="submit">Entrar</button>
               <a href="#/perdeu" class="link">Esqueceu a senha?</a>
             </form>
             <div class="debug-btns">
-              <button type="button" class="btn-debug" data-email="admin@admin.com" data-pass="Admin123456">Admin</button>
-              <button type="button" class="btn-debug" data-email="fpanizio10@gmail.com" data-pass="Aa123456789">User</button>
+              <button
+                type="button"
+                class="btn-debug"
+                data-email="admin@admin.com"
+                data-pass="Admin123456"
+              >
+                Admin
+              </button>
+              <button
+                type="button"
+                class="btn-debug"
+                data-email="fpanizio10@gmail.com"
+                data-pass="Aa123456789"
+              >
+                User
+              </button>
             </div>
           </div>
         </section>
@@ -70,7 +97,12 @@
             <form>
               <div class="field">
                 <label for="email-perdeu">Email</label>
-                <input type="email" name="email" id="email-perdeu" placeholder="seu@email.com" />
+                <input
+                  type="email"
+                  name="email"
+                  id="email-perdeu"
+                  placeholder="seu@email.com"
+                />
               </div>
               <button type="submit">Enviar Link</button>
               <a href="#/login" class="link">Voltar ao login</a>
@@ -85,7 +117,12 @@
             <form>
               <div class="field">
                 <label for="new_password">Nova Senha</label>
-                <input type="password" name="newPassword" id="new_password" placeholder="••••••••" />
+                <input
+                  type="password"
+                  name="newPassword"
+                  id="new_password"
+                  placeholder="••••••••"
+                />
               </div>
               <input type="hidden" name="token" />
               <button type="submit">Redefinir Senha</button>
@@ -99,20 +136,44 @@
             <p class="subtitle">Preencha seus dados</p>
             <form>
               <div class="field">
-                <label for="username">Username</label>
-                <input type="text" name="username" id="username" placeholder="johndoe" />
+                <label for="userame">Username</label>
+                <input
+                  type="text"
+                  name="username"
+                  id="username"
+                  placeholder="johndoe"
+                />
               </div>
               <div class="field">
                 <label for="email-criar">Email</label>
-                <input type="email" name="email" id="email-criar" placeholder="seu@email.com" />
+                <input
+                  type="email"
+                  name="email"
+                  id="email-criar"
+                  placeholder="seu@email.com"
+                />
               </div>
               <div class="field">
                 <label for="name">Nome Completo</label>
-                <input type="text" name="name" id="name" placeholder="John Doe" />
+                <input
+                  type="text"
+                  name="name"
+                  id="name"
+                  placeholder="John Doe"
+                />
               </div>
               <div class="field">
                 <label for="password-criar">Senha</label>
-                <input type="password" name="password" id="password-criar" placeholder="••••••••" />
+                <input
+                  type="password"
+                  name="password"
+                  id="password-criar"
+                  placeholder="••••••••"
+                />
+                <small class="hint"
+                  >Mínimo 10 caracteres, 1 maiúscula, 1 minúscula e 1
+                  número</small
+                >
               </div>
               <button type="submit">Criar Conta</button>
               <a href="#/login" class="link">Já tem conta? Entre</a>
@@ -128,25 +189,50 @@
               <div class="grid-2">
                 <div class="field">
                   <label for="slug">Slug</label>
-                  <input type="text" name="slug" id="slug" placeholder="meu-curso" />
+                  <input
+                    type="text"
+                    name="slug"
+                    id="slug"
+                    placeholder="meu-curso"
+                  />
                 </div>
                 <div class="field">
                   <label for="title">Título</label>
-                  <input type="text" name="title" id="title" placeholder="Nome do Curso" />
+                  <input
+                    type="text"
+                    name="title"
+                    id="title"
+                    placeholder="Nome do Curso"
+                  />
                 </div>
               </div>
               <div class="field">
                 <label for="description">Descrição</label>
-                <input type="text" name="description" id="description" placeholder="Sobre o curso..." />
+                <input
+                  type="text"
+                  name="description"
+                  id="description"
+                  placeholder="Sobre o curso..."
+                />
               </div>
               <div class="grid-2">
                 <div class="field">
                   <label for="lessons">Aulas</label>
-                  <input type="number" name="lessons" id="lessons" placeholder="0" />
+                  <input
+                    type="number"
+                    name="lessons"
+                    id="lessons"
+                    placeholder="0"
+                  />
                 </div>
                 <div class="field">
                   <label for="hours">Horas</label>
-                  <input type="number" name="hours" id="hours" placeholder="0" />
+                  <input
+                    type="number"
+                    name="hours"
+                    id="hours"
+                    placeholder="0"
+                  />
                 </div>
               </div>
               <button type="submit">Salvar Curso</button>
@@ -168,25 +254,50 @@
                 </div>
                 <div class="field">
                   <label for="lesson-slug">Slug da Aula</label>
-                  <input type="text" name="slug" id="lesson-slug" placeholder="aula-01" />
+                  <input
+                    type="text"
+                    name="slug"
+                    id="lesson-slug"
+                    placeholder="aula-01"
+                  />
                 </div>
               </div>
               <div class="field">
                 <label for="lesson-title">Título</label>
-                <input type="text" name="title" id="lesson-title" placeholder="Introdução" />
+                <input
+                  type="text"
+                  name="title"
+                  id="lesson-title"
+                  placeholder="Introdução"
+                />
               </div>
               <div class="field">
                 <label for="lesson-description">Descrição</label>
-                <input type="text" name="description" id="lesson-description" placeholder="Sobre a aula..." />
+                <input
+                  type="text"
+                  name="description"
+                  id="lesson-description"
+                  placeholder="Sobre a aula..."
+                />
               </div>
               <div class="grid-3">
                 <div class="field">
                   <label for="seconds">Segundos</label>
-                  <input type="number" name="seconds" id="seconds" placeholder="0" />
+                  <input
+                    type="number"
+                    name="seconds"
+                    id="seconds"
+                    placeholder="0"
+                  />
                 </div>
                 <div class="field">
                   <label for="order">Ordem</label>
-                  <input type="number" name="order" id="order" placeholder="1" />
+                  <input
+                    type="number"
+                    name="order"
+                    id="order"
+                    placeholder="1"
+                  />
                 </div>
                 <div class="field">
                   <label for="free">Gratuita</label>
@@ -199,7 +310,13 @@
               </div>
               <div class="field">
                 <label for="video-path">Caminho do Vídeo</label>
-                <input type="text" name="video" id="video-path" placeholder="files/video.mp4" readonly />
+                <input
+                  type="text"
+                  name="video"
+                  id="video-path"
+                  placeholder="files/video.mp4"
+                  readonly
+                />
               </div>
               <button type="submit">Salvar Aula</button>
             </form>
@@ -224,12 +341,93 @@
           <div class="render"></div>
         </section>
 
+        <section id="perfil" data-role="user">
+          <div class="card">
+            <h2>Meu Perfil</h2>
+            <p class="subtitle">
+              Logado como: <strong id="profile-name"></strong>
+            </p>
+
+            <div class="accordions">
+              <details class="accordion">
+                <summary>Alterar Email</summary>
+                <form id="form-email">
+                  <div class="field">
+                    <label for="old-email">Email antigo</label>
+                    <input
+                      type="email"
+                      name="oldEmail"
+                      id="old-email"
+                      placeholder="antigo@email.com"
+                    />
+                    <small class="hint hidden">Email não encontrado ou inválido</small>
+                  </div>
+                  <div class="field">
+                    <label for="new-email">Novo Email</label>
+                    <input
+                      type="email"
+                      name="newEmail"
+                      id="new-email"
+                      placeholder="novo@email.com"
+                    />
+                    <small class="hint hidden">Email já cadastrado ou inválido</small>
+                  </div>
+                  <div class="field">
+                    <label for="email-password">Senha</label>
+                    <input
+                      type="password"
+                      name="password"
+                      id="email-password"
+                      placeholder="••••••••"
+                    />
+                  </div>
+                  <button type="submit">Confirmar Troca</button>
+                </form>
+              </details>
+
+              <details class="accordion">
+                <summary>Alterar Senha</summary>
+                <form id="form-password">
+                  <div class="field">
+                    <label for="current-password">Senha Atual</label>
+                    <input
+                      type="password"
+                      name="currentPassword"
+                      id="current-password"
+                      placeholder="••••••••"
+                    />
+                  </div>
+                  <div class="field">
+                    <label for="new-password">Nova Senha</label>
+                    <input
+                      type="password"
+                      name="newPassword"
+                      id="new-password"
+                      placeholder="••••••••"
+                    />
+                    <small class="hint"
+                      >Mínimo 10 caracteres, 1 maiúscula, 1 minúscula e 1
+                      número</small
+                    >
+                  </div>
+                  <button type="submit">Confirmar Troca</button>
+                </form>
+              </details>
+            </div>
+          </div>
+        </section>
+
         <section id="usuarios" data-role="admin">
           <div class="card">
             <h2>Buscar Usuários</h2>
             <form class="search-form">
               <div class="field">
-                <input type="text" name="s" id="s" placeholder="Buscar por nome ou email..." />
+                <input
+                  type="text"
+                  name="s"
+                  id="s"
+                  placeholder="Buscar por nome ou email..."
+                />
               </div>
               <input type="hidden" name="page" id="page" value="1" />
               <button type="submit">Buscar</button>
@@ -265,7 +463,7 @@
         --transition: 0.2s ease;
       }
 
-      [data-theme="light"] {
+      [data-theme='light'] {
         --bg: #f8f9fa;
         --bg-card: #ffffff;
         --bg-hover: #f1f3f4;
@@ -296,7 +494,7 @@
         position: relative;
       }
 
-      [data-theme="light"] header {
+      [data-theme='light'] header {
         background: linear-gradient(to bottom, #e8e8e8, var(--bg));
       }
 
@@ -325,11 +523,19 @@
         transform: translateY(-50%) scale(1.1);
       }
 
-      .icon-light { display: none; }
-      .icon-dark { display: block; }
+      .icon-light {
+        display: none;
+      }
+      .icon-dark {
+        display: block;
+      }
 
-      [data-theme="light"] .icon-light { display: block; }
-      [data-theme="light"] .icon-dark { display: none; }
+      [data-theme='light'] .icon-light {
+        display: block;
+      }
+      [data-theme='light'] .icon-dark {
+        display: none;
+      }
 
       h1 {
         font-size: 2rem;
@@ -423,7 +629,31 @@
         color: var(--text-muted);
       }
 
-      input, select {
+      .hint {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        opacity: 0.8;
+        margin-top: 0.25rem;
+        display: block;
+        transition: var(--transition);
+      }
+
+      .field.error input {
+        border-color: var(--error);
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+      }
+
+      .field.error .hint {
+        color: var(--error);
+        opacity: 1;
+      }
+
+      .field.error .hint.hidden {
+        display: block !important;
+      }
+
+      input,
+      select {
         width: 100%;
         padding: 0.875rem 1rem;
         background: var(--bg);
@@ -446,7 +676,7 @@
         box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
       }
 
-      input[type="file"] {
+      input[type='file'] {
         padding: 0.75rem;
         cursor: pointer;
       }
@@ -458,7 +688,7 @@
         opacity: 0.7;
       }
 
-      input[type="file"]::file-selector-button {
+      input[type='file']::file-selector-button {
         background: var(--bg-hover);
         border: 1px solid var(--border);
         border-radius: var(--radius-sm);
@@ -845,7 +1075,8 @@
       }
 
       /* Status Messages */
-      .ok, .fail {
+      .ok,
+      .fail {
         padding: 0.75rem 1rem;
         border-radius: var(--radius-sm);
         font-size: 0.875rem;
@@ -871,6 +1102,61 @@
         margin-bottom: 1rem;
       }
 
+      /* Accordions */
+      .accordions {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+
+      .accordion {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+      }
+
+      .accordion summary {
+        padding: 1rem 1.25rem;
+        cursor: pointer;
+        font-weight: 500;
+        color: var(--text);
+        transition: var(--transition);
+        list-style: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .accordion summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .accordion summary::after {
+        content: '+';
+        font-size: 1.25rem;
+        color: var(--text-muted);
+        transition: var(--transition);
+      }
+
+      .accordion[open] summary::after {
+        content: '−';
+        color: var(--accent);
+      }
+
+      .accordion summary:hover {
+        background: var(--bg-hover);
+      }
+
+      .accordion[open] summary {
+        border-bottom: 1px solid var(--border);
+      }
+
+      .accordion form {
+        padding: 1.25rem;
+      }
+
       /* Hidden */
       .hidden {
         display: none !important;
@@ -878,7 +1164,8 @@
 
       /* Responsive */
       @media (max-width: 640px) {
-        .grid-2, .grid-3 {
+        .grid-2,
+        .grid-3 {
           grid-template-columns: 1fr;
         }
 
@@ -918,6 +1205,7 @@
       }
 
       let user;
+      let userName;
       async function getUser() {
         user = 'public';
         try {
@@ -925,6 +1213,7 @@
           const body = await response.json();
           if (!response.ok) throw new Error();
           user = body.role;
+          userName = body.name;
           return user;
         } catch {
           return user;
@@ -935,11 +1224,18 @@
 
       async function router() {
         if (user === undefined) user = await getUser();
-        const r = location.hash.replace('#', '').split('/').filter(Boolean).shift();
+        const r = location.hash
+          .replace('#', '')
+          .split('/')
+          .filter(Boolean)
+          .shift();
         const route = document.getElementById(r);
         routes.forEach((item) => item.classList.remove('ativo'));
         if (route) {
-          if (user !== route.dataset.role) location.hash = '/login';
+          const role = route.dataset.role;
+          const hasAccess =
+            user === role || (user === 'admin' && role === 'user');
+          if (!hasAccess) location.hash = '/login';
           route.classList.add('ativo');
           if (typeof data[r] === 'function') data[r](route);
         } else {
@@ -952,13 +1248,15 @@
 
       async function getData(url, callback) {
         const response = await fetch(url);
-          const body = await response.json();
+        const body = await response.json();
         callback(body, response);
       }
 
       function renderResetCourseButton(courseId) {
         setTimeout(() => {
-          sendForm('DELETE', '/lms/course/reset', 'resetar-curso', () => location.reload());
+          sendForm('DELETE', '/lms/course/reset', 'resetar-curso', () =>
+            location.reload()
+          );
         }, 50);
 
         return `
@@ -993,7 +1291,9 @@
         cursos: (route) => {
           getData('/lms/courses', (courses) => {
             const render = route.querySelector('.render');
-            render.innerHTML = courses.map(course => `
+            render.innerHTML = courses
+              .map(
+                (course) => `
               <div class="course-card">
                 <h3>${esc(course.title)}</h3>
                 <p>${esc(course.description)}</p>
@@ -1001,14 +1301,21 @@
                   <span>📚 ${esc(course.lessons)} aulas</span>
                   <span>⏱️ ${esc(course.hours)}h</span>
                 </div>
-                <a class="btn" href="#/curso/${esc(course.slug)}">Acessar Curso</a>
+                <a class="btn" href="#/curso/${esc(
+                  course.slug
+                )}">Acessar Curso</a>
               </div>
-            `).join('');
+            `
+              )
+              .join('');
           });
         },
 
         curso: (route) => {
-          const [_, curso] = location.hash.replace('#', '').split('/').filter(Boolean);
+          const [_, curso] = location.hash
+            .replace('#', '')
+            .split('/')
+            .filter(Boolean);
           if (!curso) return;
 
           getData(`/lms/course/${curso}`, ({ course, lessons, completed }) => {
@@ -1023,20 +1330,26 @@
                 </div>
               </div>
               <ul class="lessons-list">
-                ${lessons.map(lesson => {
-                  const isCompleted = completed.some(x => x.lesson_id == lesson.id);
-                  return `
+                ${lessons
+                  .map((lesson) => {
+                    const isCompleted = completed.some(
+                      (x) => x.lesson_id == lesson.id
+                    );
+                    return `
                     <li>
                       <a href="#/aula/${esc(course.slug)}/${esc(lesson.slug)}">
                         ${esc(lesson.title)}
                         <span class="lesson-info">
                           <span>${secToMin(lesson.seconds)}</span>
-                          <span class="status-dot ${isCompleted ? 'complete' : ''}"></span>
+                          <span class="status-dot ${
+                            isCompleted ? 'complete' : ''
+                          }"></span>
                         </span>
                       </a>
                     </li>
                   `;
-                }).join('')}
+                  })
+                  .join('')}
               </ul>
               ${completed.length > 0 ? renderResetCourseButton(course.id) : ''}
             `;
@@ -1044,7 +1357,10 @@
         },
 
         aula: (route) => {
-          const [_, curso, aula] = location.hash.replace('#', '').split('/').filter(Boolean);
+          const [_, curso, aula] = location.hash
+            .replace('#', '')
+            .split('/')
+            .filter(Boolean);
           if (!curso || !aula) return;
 
           getData(`/lms/lesson/${curso}/${aula}`, (lesson) => {
@@ -1057,12 +1373,26 @@
                   <a href="#/curso/${curso}">${curso}</a>
                 </div>
                 <div class="video-container">
-                  <video preload="metadata" src="/${lesson.video}" controls></video>
+                  <video preload="metadata" src="/${
+                    lesson.video
+                  }" controls></video>
                 </div>
                 <nav class="lesson-nav">
-                  ${lesson.prev ? `<a class="btn" href="#/aula/${curso}/${lesson.prev}">← Anterior</a>` : '<span></span>'}
-                  ${lesson.completed ? '<span></span>' : renderCompleteButton(lesson.course_id, lesson.id)}
-                  ${lesson.next ? `<a class="btn" href="#/aula/${curso}/${lesson.next}">Próxima →</a>` : '<span></span>'}
+                  ${
+                    lesson.prev
+                      ? `<a class="btn" href="#/aula/${curso}/${lesson.prev}">← Anterior</a>`
+                      : '<span></span>'
+                  }
+                  ${
+                    lesson.completed
+                      ? '<span></span>'
+                      : renderCompleteButton(lesson.course_id, lesson.id)
+                  }
+                  ${
+                    lesson.next
+                      ? `<a class="btn" href="#/aula/${curso}/${lesson.next}">Próxima →</a>`
+                      : '<span></span>'
+                  }
                 </nav>
               </div>
             `;
@@ -1075,14 +1405,24 @@
             const render = route.querySelector('.render');
             render.innerHTML = `
               <ul class="certificates-list">
-                ${certificates.map(cert => `
+                ${certificates
+                  .map(
+                    (cert) => `
                   <li>
-                    <a class="btn" target="_blank" href="/lms/certificate/${cert.id}">
+                    <a class="btn" target="_blank" href="/lms/certificate/${
+                      cert.id
+                    }">
                       ${esc(cert.title)}
-                      <span>${cert.completed.slice(0, 10).split('-').reverse().join('/')}</span>
+                      <span>${cert.completed
+                        .slice(0, 10)
+                        .split('-')
+                        .reverse()
+                        .join('/')}</span>
                     </a>
                   </li>
-                `).join('')}
+                `
+                  )
+                  .join('')}
               </ul>
             `;
           });
@@ -1103,6 +1443,102 @@
           }
         },
 
+        perfil: (route) => {
+          const profileName = route.querySelector('#profile-name');
+          if (profileName) profileName.textContent = userName || 'Usuário';
+
+          // Evita adicionar listeners duplicados
+          if (route.dataset.init) return;
+          route.dataset.init = 'true';
+
+          // Form: Alterar Email
+          const formEmail = route.querySelector('#form-email');
+          const oldEmailField = formEmail?.querySelector('#old-email')?.closest('.field');
+          const newEmailField = formEmail?.querySelector('#new-email')?.closest('.field');
+
+          formEmail?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(formEmail);
+            const badge = document.createElement('div');
+            let errorTitle = '';
+
+            try {
+              const response = await fetch('/auth/email/update', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(Object.fromEntries(formData)),
+              });
+              const body = await response.json();
+              errorTitle = body?.title || '';
+              if (!response.ok) throw new Error(body?.title || 'Erro');
+              badge.textContent = 'Email alterado! Redirecionando...';
+              badge.className = 'ok';
+              formEmail.reset();
+              showFieldError(oldEmailField, false);
+              showFieldError(newEmailField, false);
+              // Redireciona para login após 1.5s (sessão invalidada)
+              setTimeout(() => {
+                user = 'public';
+                handleUserNav(user);
+                location.hash = '/login';
+              }, 1500);
+            } catch (err) {
+              badge.textContent = err.message || 'Erro';
+              badge.className = 'fail';
+              // Erros do email antigo
+              if (errorTitle === 'Old email not found' || errorTitle === 'invalid email') {
+                showFieldError(oldEmailField, true);
+              }
+              // Erros do email novo
+              if (errorTitle === 'New email already exists' || errorTitle === 'invalid email') {
+                showFieldError(newEmailField, true);
+              }
+            } finally {
+              formEmail.appendChild(badge);
+              setTimeout(() => badge.remove(), 2000);
+            }
+          });
+
+          // Form: Alterar Senha
+          const formPassword = route.querySelector('#form-password');
+          const newPasswordField = formPassword?.querySelector(
+            '#new-password'
+          )?.closest('.field');
+
+          formPassword?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(formPassword);
+            const badge = document.createElement('div');
+            let status = 0;
+
+            try {
+              const response = await fetch('/auth/password/update', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(Object.fromEntries(formData)),
+              });
+              status = response.status;
+              const body = await response.json();
+              if (!response.ok) throw new Error(body?.title || 'Erro');
+
+              badge.textContent = 'Senha alterada!';
+              badge.className = 'ok';
+              formPassword.reset();
+              newPasswordField?.classList.remove('error');
+            } catch (err) {
+              badge.textContent = err.message || 'Erro';
+              badge.className = 'fail';
+              if (err.message === 'invalid password' || status === 422) {
+                newPasswordField?.classList.add('error');
+                setTimeout(() => newPasswordField?.classList.remove('error'), 3000);
+              }
+            } finally {
+              formPassword.appendChild(badge);
+              setTimeout(() => badge.remove(), 2000);
+            }
+          });
+        },
+
         ['criar-curso']: (route) => {
           getData('/lms/courses', (courses) => {
             const render = route.querySelector('.render');
@@ -1121,7 +1557,7 @@
                 form.reset();
               } else {
                 selectedCourse = courses[select.value];
-                Object.keys(selectedCourse).forEach(key => {
+                Object.keys(selectedCourse).forEach((key) => {
                   const input = form.querySelector(`[name="${key}"]`);
                   if (input) input.value = selectedCourse[key];
                 });
@@ -1135,7 +1571,9 @@
 
               try {
                 const isUpdate = selectedCourse !== null;
-                const url = isUpdate ? `/lms/course/${selectedCourse.slug}` : '/lms/course';
+                const url = isUpdate
+                  ? `/lms/course/${selectedCourse.slug}`
+                  : '/lms/course';
                 const method = isUpdate ? 'PUT' : 'POST';
 
                 const response = await fetch(url, {
@@ -1147,7 +1585,9 @@
                 const body = await response.json();
                 if (!response.ok) throw new Error(body?.title || 'Erro');
 
-                badge.textContent = isUpdate ? 'Curso atualizado!' : 'Curso criado!';
+                badge.textContent = isUpdate
+                  ? 'Curso atualizado!'
+                  : 'Curso criado!';
                 badge.className = 'ok';
                 location.reload();
               } catch (err) {
@@ -1172,9 +1612,12 @@
 
           // Buscar cursos para popular o select
           getData('/lms/courses', (courses) => {
-            courseSelect.innerHTML = '<option value="">Selecione o curso...</option>';
-            courses.forEach(course => {
-              courseSelect.innerHTML += `<option value="${esc(course.slug)}">${esc(course.title)}</option>`;
+            courseSelect.innerHTML =
+              '<option value="">Selecione o curso...</option>';
+            courses.forEach((course) => {
+              courseSelect.innerHTML += `<option value="${esc(
+                course.slug
+              )}">${esc(course.title)}</option>`;
             });
           });
 
@@ -1183,7 +1626,9 @@
             const select = document.createElement('select');
             select.innerHTML = '<option value="">+ Nova aula</option>';
             lessons.forEach((lesson, i) => {
-              select.innerHTML += `<option value="${i}">${esc(lesson.courseSlug)} - ${esc(lesson.slug)}</option>`;
+              select.innerHTML += `<option value="${i}">${esc(
+                lesson.courseSlug
+              )} - ${esc(lesson.slug)}</option>`;
             });
 
             select.addEventListener('change', () => {
@@ -1191,15 +1636,18 @@
                 selectedLesson = null;
                 form.reset();
                 // Restaurar opções do select de cursos
-                courseSelect.innerHTML = '<option value="">Selecione o curso...</option>';
+                courseSelect.innerHTML =
+                  '<option value="">Selecione o curso...</option>';
                 getData('/lms/courses', (courses) => {
-                  courses.forEach(course => {
-                    courseSelect.innerHTML += `<option value="${esc(course.slug)}">${esc(course.title)}</option>`;
+                  courses.forEach((course) => {
+                    courseSelect.innerHTML += `<option value="${esc(
+                      course.slug
+                    )}">${esc(course.title)}</option>`;
                   });
                 });
               } else {
                 selectedLesson = lessons[select.value];
-                Object.keys(selectedLesson).forEach(key => {
+                Object.keys(selectedLesson).forEach((key) => {
                   const input = form.querySelector(`[name="${key}"]`);
                   if (input) input.value = selectedLesson[key];
                 });
@@ -1233,7 +1681,9 @@
               }
 
               const isUpdate = selectedLesson !== null;
-              const url = isUpdate ? `/lms/lesson/${selectedLesson.id}` : '/lms/lesson';
+              const url = isUpdate
+                ? `/lms/lesson/${selectedLesson.id}`
+                : '/lms/lesson';
               const method = isUpdate ? 'PUT' : 'POST';
 
               const response = await fetch(url, {
@@ -1245,7 +1695,9 @@
               const body = await response.json();
               if (!response.ok) throw new Error(body?.title || 'Erro');
 
-              badge.textContent = isUpdate ? 'Aula atualizada!' : 'Aula criada!';
+              badge.textContent = isUpdate
+                ? 'Aula atualizada!'
+                : 'Aula criada!';
               badge.className = 'ok';
               location.reload();
             } catch (err) {
@@ -1266,10 +1718,13 @@
             const formData = new FormData(form);
             const s = formData.get('s') || '';
             const page = formData.get('page') || 1;
-            getData(`/auth/users/search?s=${s}&page=${page}`, (users, response) => {
-              const total = Number(response.headers.get('x-total-count'));
-              renderUsers(users, total, render, form);
-            });
+            getData(
+              `/auth/users/search?s=${s}&page=${page}`,
+              (users, response) => {
+                const total = Number(response.headers.get('x-total-count'));
+                renderUsers(users, total, render, form);
+              }
+            );
           };
 
           fetchUsers();
@@ -1285,12 +1740,16 @@
         const pageInput = document.getElementById('page');
 
         let html = `<ul class="users-list">
-          ${users.map(user => `
+          ${users
+            .map(
+              (user) => `
             <li>
               <span>${esc(user.name)}</span>
               <span>${esc(user.email)}</span>
             </li>
-          `).join('')}
+          `
+            )
+            .join('')}
         </ul>`;
 
         if (totalPages > 1) {
@@ -1303,7 +1762,7 @@
 
         render.innerHTML = html;
 
-        render.querySelectorAll('#pages button').forEach(btn => {
+        render.querySelectorAll('#pages button').forEach((btn) => {
           btn.addEventListener('click', () => {
             pageInput.value = btn.dataset.page;
             form.requestSubmit();
@@ -1312,12 +1771,35 @@
       }
 
       // Form Handler
+      function showFieldError(field, show = true) {
+        if (!field) return;
+        field.classList.toggle('error', show);
+        if (show) {
+          setTimeout(() => field.classList.remove('error'), 3000);
+        }
+      }
+
+      function showPasswordError(form, show = true) {
+        const passwordField = form.querySelector(
+          'input[type="password"]'
+        )?.closest('.field');
+        showFieldError(passwordField, show);
+      }
+
+      function showEmailError(form, show = true) {
+        const emailField = form.querySelector(
+          'input[type="email"]'
+        )?.closest('.field');
+        showFieldError(emailField, show);
+      }
+
       async function sendForm(method, url, id, callback) {
         const form = document.querySelector('#' + id + ' form');
         form?.addEventListener('submit', async (e) => {
           e.preventDefault();
           const formData = new FormData(form);
-          let response, body = {};
+          let response,
+            body = {};
           const badge = document.createElement('div');
 
           try {
@@ -1331,9 +1813,20 @@
             if (typeof callback === 'function') callback(response, body);
             badge.textContent = 'Sucesso!';
             badge.className = 'ok';
+            showPasswordError(form, false);
+            showEmailError(form, false);
           } catch {
             badge.textContent = body?.title || 'Erro';
             badge.className = 'fail';
+            // Erros de senha
+            if (body?.title === 'invalid password' || response?.status === 422) {
+              showPasswordError(form, true);
+            }
+            // Erros de email/login
+            if (body?.title === 'invalid email' || 
+                body?.title === 'User not found, please check your email and password') {
+              showEmailError(form, true);
+            }
           } finally {
             form.appendChild(badge);
             setTimeout(() => badge.remove(), 2000);
@@ -1354,7 +1847,7 @@
       sendForm('POST', '/auth/password/reset', 'resetar');
 
       // Debug Quick Login
-      document.querySelectorAll('.btn-debug').forEach(btn => {
+      document.querySelectorAll('.btn-debug').forEach((btn) => {
         btn.addEventListener('click', async () => {
           const email = btn.dataset.email;
           const pass = btn.dataset.pass;
@@ -1375,7 +1868,9 @@
 
       function initTheme() {
         const saved = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const prefersDark = window.matchMedia(
+          '(prefers-color-scheme: dark)'
+        ).matches;
         setTheme(saved || (prefersDark ? 'dark' : 'light'));
       }
 

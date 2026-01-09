@@ -74,7 +74,7 @@ export class AuthApi extends Api {
       });
 
       res.setCookie(cookie);
-      res.status(200).json({ title: 'Login successful' });
+      res.status(200).json({ title: 'Login successful', name: user.name });
     },
 
     getSession: (req, res) => {
@@ -85,9 +85,10 @@ export class AuthApi extends Api {
       if (!user) {
         throw new RouteError('User not found', 404);
       }
-      res.status(200).json({ title: 'valid session', role: user.role });
+      res
+        .status(200)
+        .json({ title: 'valid session', role: user.role, name: user.name });
     },
-
     deleteSession: (req, res) => {
       const sid = req.cookies[COOKIE_SID_KEY];
       if (!sid) {
@@ -101,7 +102,6 @@ export class AuthApi extends Api {
 
       res.status(200).json({ title: 'Logout successful' });
     },
-
     //Ajustar essa parte
     passwordUpdate: async (req, res) => {
       const { currentPassword, newPassword } = {
@@ -147,6 +147,53 @@ export class AuthApi extends Api {
 
       res.setCookie(cookie);
       res.status(200).json({ title: 'Password updated' });
+    },
+
+    emailUpdate: async (req, res) => {
+      const { oldEmail, newEmail, password } = {
+        oldEmail: v.email(req.body.oldEmail),
+        newEmail: v.email(req.body.newEmail),
+        password: v.password(req.body.password),
+      };
+
+      if (!req.session) {
+        throw new RouteError('Unauthorized', 401);
+      }
+
+      const userSession = this.query.selectUser('id', req.session.user_id);
+      if (!userSession) {
+        throw new RouteError('User not found', 404);
+      }
+
+      const oldEmailBd = this.query.selectUserByEmail(oldEmail);
+      if (!oldEmailBd) {
+        throw new RouteError('Old email not found', 404);
+      }
+
+      const newEmailBd = this.query.selectUserByEmail(newEmail);
+      if (newEmailBd) {
+        throw new RouteError('New email already exists', 409);
+      }
+
+      const isEqual = await this.password.verify(
+        password,
+        userSession.password_hash
+      );
+      if (!isEqual) {
+        throw new RouteError('Your current password is incorrect', 400);
+      }
+
+      const updateEmail = this.query.updateUser(
+        userSession.id,
+        'email',
+        newEmail
+      );
+      if (updateEmail.changes === 0) {
+        throw new RouteError('Failed to update email', 500);
+      }
+
+      this.session.invalidateAll(userSession.id);
+      res.status(200).json({ title: 'Email updated, please login again' });
     },
 
     passwordForgot: async (req, res) => {
@@ -223,6 +270,9 @@ export class AuthApi extends Api {
     this.router.put('/auth/password/forgot', this.handlers.passwordForgot);
     this.router.get('/auth/users/search', this.handlers.searchUsers, [
       this.auth.guard('admin'),
+    ]);
+    this.router.put('/auth/email/update', this.handlers.emailUpdate, [
+      this.auth.guard('user'),
     ]);
   }
 }

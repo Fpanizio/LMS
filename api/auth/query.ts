@@ -1,6 +1,6 @@
-import { Query } from "../../core/utils/abstract.ts";
+import { Query } from '../../core/utils/abstract.ts';
 
-export type UserRole = "user" | "editor" | "admin";
+export type UserRole = 'user' | 'editor' | 'admin';
 
 type UserData = {
   id: number;
@@ -32,12 +32,12 @@ type ResetData = {
   ua: string;
 };
 
-type UserCreate = Omit<UserData, "id" | "created" | "updated">;
-type SessionCreate = Omit<SessionData, "created" | "revoked" | "expires"> & {
+type UserCreate = Omit<UserData, 'id' | 'created' | 'updated'>;
+type SessionCreate = Omit<SessionData, 'created' | 'revoked' | 'expires'> & {
   expires_ms: number;
 };
 
-type ResetCreate = Omit<ResetData, "created" | "expires"> & {
+type ResetCreate = Omit<ResetData, 'created' | 'expires'> & {
   expires_ms: number;
 };
 
@@ -51,15 +51,15 @@ export class AuthQuery extends Query {
       )
       .run(name, username, email, role, password_hash);
   }
-  selectUser(key: "email" | "username" | "id", value: string | number) {
+  selectUser(key: 'email' | 'username' | 'id', value: string | number) {
     return this.db
       .query(
         /* sql */ `
-            SELECT "id", "password_hash", "email" FROM "users" WHERE ${key} = ?;
+            SELECT "id", "password_hash", "email", "name" FROM "users" WHERE ${key} = ?;
         `
       )
       .get(value) as
-      | { id: number; password_hash: string; email: string }
+      | { id: number; password_hash: string; email: string; name: string }
       | undefined;
   }
   insertSession({ sid_hash, user_id, expires_ms, ip, ua }: SessionCreate) {
@@ -119,10 +119,10 @@ export class AuthQuery extends Query {
     return this.db
       .query(
         /* sql */ `
-            SELECT "role" FROM "users" WHERE "id" = ?;
+            SELECT "role", "name" FROM "users" WHERE "id" = ?;
         `
       )
-      .get(user_id) as { role: UserRole } | undefined;
+      .get(user_id) as { role: UserRole; name: string } | undefined;
   }
 
   searchUsers(search: string, page: number, limit: number) {
@@ -160,7 +160,7 @@ export class AuthQuery extends Query {
       .get(pattern, pattern, pattern) as { total: number };
   }
 
-  updateUser(user_id: number, key: "password_hash" | "email", value: string) {
+  updateUser(user_id: number, key: 'password_hash' | 'email', value: string) {
     return this.db
       .query(
         /* sql */ `
@@ -199,5 +199,15 @@ export class AuthQuery extends Query {
         `
       )
       .run(user_id);
+  }
+
+  selectUserByEmail(email: string) {
+    return !!this.db
+      .query(
+        /* sql */ `
+            SELECT 1 FROM "users" WHERE "email" = ? LIMIT 1;
+        `
+      )
+      .get(email);
   }
 }
