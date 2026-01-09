@@ -40,11 +40,11 @@ CREATE TABLE IF NOT EXISTS "courses" (
   CREATE TABLE IF NOT EXISTS "certificates" (
     "id" TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(8)))),
     "user_id" INTEGER NOT NULL,
-    "course_id" INTEGER NOT NULL,
+    "course_id" INTEGER,
     "completed" TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE ("user_id", "course_id"),
     FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE,
-    FOREIGN KEY ("course_id") REFERENCES "courses" ("id")
+    FOREIGN KEY ("course_id") REFERENCES "courses" ("id") ON DELETE SET NULL
   ) WITHOUT ROWID, STRICT;
   
   -- lessons_completed with all information

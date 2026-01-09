@@ -1,71 +1,113 @@
-import { Query } from "../../core/utils/abstract.ts";
+import { Query } from '../../core/utils/abstract.ts';
 
 type CourseData = {
-    id: number;
-    slug: string;
-    title: string;
-    description: string;
-    lessons: number;
-    hours: number;
-    created: string;
-}
+  id: number;
+  slug: string;
+  title: string;
+  description: string;
+  lessons: number;
+  hours: number;
+  created: string;
+};
 
 type CourseCreate = Omit<CourseData, 'id' | 'created'>;
 type CourseUpdate = Partial<CourseCreate> & { slug: string };
 
 type LessonData = {
-    id: number;
-    course_id: number;
-    slug: string;
-    title: string;
-    seconds: number;
-    video: string;
-    description: string;
-    order: number;
-    free: number; // 0: not free, 1: free
-    created: string;
-}
+  id: number;
+  course_id: number;
+  slug: string;
+  title: string;
+  seconds: number;
+  video: string;
+  description: string;
+  order: number;
+  free: number; // 0: not free, 1: free
+  created: string;
+};
 
-type LessonCreate = Omit<LessonData, 'id' | 'course_id' | 'created'> & { courseSlug: string };
-type LessonUpdate = Partial<Omit<LessonData, 'id' | 'course_id' | 'created'>> & { id: number };
+type LessonCreate = Omit<LessonData, 'id' | 'course_id' | 'created'> & {
+  courseSlug: string;
+};
+type LessonUpdate = Partial<
+  Omit<LessonData, 'id' | 'course_id' | 'created'>
+> & { id: number };
 
 type CertificateData = {
-    id: string;
-    name: string;
-    title: string;
-    hours: number;
-    lessons: number;
-    completed: string;
-}
+  id: string;
+  name: string;
+  title: string;
+  hours: number;
+  lessons: number;
+  completed: string;
+};
 
 export class LmsQuery extends Query {
-    insertCourse({ slug, title, description, lessons, hours }: CourseCreate) {
-        return this.db.query(/* sql */ `
+  insertCourse({ slug, title, description, lessons, hours }: CourseCreate) {
+    return this.db
+      .query(
+        /* sql */ `
             INSERT OR IGNORE INTO courses 
             ("slug", "title", "description", "lessons", "hours") VALUES (?, ?, ?, ?, ?);
-        `).run(slug, title, description, lessons, hours);
-    }
-    insertLesson({ courseSlug, slug, title, seconds, video, description, order, free }: LessonCreate) {
-        return this.db.query(/* sql */ `
+        `
+      )
+      .run(slug, title, description, lessons, hours);
+  }
+  insertLesson({
+    courseSlug,
+    slug,
+    title,
+    seconds,
+    video,
+    description,
+    order,
+    free,
+  }: LessonCreate) {
+    return this.db
+      .query(
+        /* sql */ `
             INSERT OR IGNORE INTO lessons 
             ("course_id", "slug", "title", "seconds", "video", "description", "order", "free" )
              VALUES ((SELECT "id" FROM "courses" WHERE "slug" = ?), ?, ?, ?, ?, ?, ?, ?);
-        `).run(courseSlug, slug, title, seconds, video, description, order, free);
-    }
+        `
+      )
+      .run(courseSlug, slug, title, seconds, video, description, order, free);
+  }
 
-    updateCourse({ slug, title, description, lessons, hours }: CourseUpdate) {
-        return this.db.prepare(/* sql */ `
+  updateCourse({ slug, title, description, lessons, hours }: CourseUpdate) {
+    return this.db
+      .prepare(
+        /* sql */ `
             UPDATE "courses" 
             SET "title" = COALESCE(?, "title"),
                 "description" = COALESCE(?, "description"),
                 "lessons" = COALESCE(?, "lessons"),
                 "hours" = COALESCE(?, "hours")
             WHERE "slug" = ?;
-        `).run(title, description, lessons, hours, slug);
-    }
+        `
+      )
+      .run(
+        title ?? null,
+        description ?? null,
+        lessons ?? null,
+        hours ?? null,
+        slug
+      );
+  }
 
-    updateLesson({ id, slug, title, seconds, video, description, order, free }: LessonUpdate) {
-        return this.db.prepare(/* sql */ `
+  updateLesson({
+    id,
+    slug,
+    title,
+    seconds,
+    video,
+    description,
+    order,
+    free,
+  }: LessonUpdate) {
+    return this.db
+      .prepare(
+        /* sql */ `
             UPDATE "lessons" 
             SET "slug" = COALESCE(?, "slug"),
                 "title" = COALESCE(?, "title"),
@@ -75,108 +117,225 @@ export class LmsQuery extends Query {
                 "order" = COALESCE(?, "order"),
                 "free" = COALESCE(?, "free")
             WHERE "id" = ?;
-        `).run(slug, title, seconds, video, description, order, free, id);
-    }
+        `
+      )
+      .run(
+        slug ?? null,
+        title ?? null,
+        seconds ?? null,
+        video ?? null,
+        description ?? null,
+        order ?? null,
+        free ?? null,
+        id
+      );
+  }
 
-    selectCourses() {
-        return this.db.prepare(/* sql */ `
+  selectCourses() {
+    return this.db
+      .prepare(
+        /* sql */ `
             SELECT * FROM "courses" ORDER BY "created" ASC LIMIT 100;
-        `).all() as CourseData[];
-    }
-    selectCourseBySlug(slug: string) {
-        return this.db.prepare(/* sql */ `
+        `
+      )
+      .all() as CourseData[];
+  }
+
+  selectCourseBySlug(slug: string) {
+    return this.db
+      .prepare(
+        /* sql */ `
             SELECT * FROM "courses" WHERE "slug" = ?;
-        `).get(slug) as CourseData | undefined;
-    }
+        `
+      )
+      .get(slug) as CourseData | undefined;
+  }
 
-
-    //Lessons
-    selectAllLessons() {
-        return this.db.prepare(/* sql */ `
+  //Lessons
+  selectAllLessons() {
+    return this.db
+      .prepare(
+        /* sql */ `
             SELECT l.*, c.slug as courseSlug 
             FROM "lessons" l
             JOIN "courses" c ON l.course_id = c.id
             ORDER BY c.slug, l."order" ASC
             LIMIT 500;
-        `).all() as (LessonData & { courseSlug: string })[];
-    }
+        `
+      )
+      .all() as (LessonData & { courseSlug: string })[];
+  }
 
-    selectLessonsBySlug(slug: string) {
-        return this.db.prepare(/* sql */ `
+  selectLessonsBySlug(slug: string) {
+    return this.db
+      .prepare(
+        /* sql */ `
             SELECT * FROM "lessons" WHERE "course_id" = (SELECT "id" FROM "courses" WHERE "slug" = ?) ORDER BY "order" ASC;
-        `).all(slug) as LessonData[];
-    }
+        `
+      )
+      .all(slug) as LessonData[];
+  }
 
-    selectLesson(courseSlug: string, lessonSlug: string) {
-        return this.db.prepare(/* sql */ `
+  selectLesson(courseSlug: string, lessonSlug: string) {
+    return this.db
+      .prepare(
+        /* sql */ `
             SELECT * FROM "lessons" WHERE "course_id" = (SELECT "id" FROM "courses" WHERE "slug" = ?) AND "slug" = ?;
-        `).get(courseSlug, lessonSlug) as LessonData | undefined;
-    }
+        `
+      )
+      .get(courseSlug, lessonSlug) as LessonData | undefined;
+  }
 
-    selectLessonNav(courseSlug: string, lessonSlug: string) {
-        return this.db.prepare(/* sql */ `
+  selectLessonNav(courseSlug: string, lessonSlug: string) {
+    return this.db
+      .prepare(
+        /* sql */ `
             SELECT "slug" FROM "lesson_nav"
              WHERE "course_id" = (SELECT "id" FROM "courses" WHERE "slug" = ?)
               AND "current_slug" = ?;
-        `).all(courseSlug, lessonSlug) as { slug: string }[];
-    }
+        `
+      )
+      .all(courseSlug, lessonSlug) as { slug: string }[];
+  }
 
-    insertLessonCompleted(userId: number, courseId: number, lessonId: number) {
-        return this.db.prepare(/* sql */ `
+  insertLessonCompleted(userId: number, courseId: number, lessonId: number) {
+    return this.db
+      .prepare(
+        /* sql */ `
             INSERT OR IGNORE INTO "lessons_completed"
             ("user_id", "course_id", "lesson_id")
             VALUES (?, ?, ?);
-        `).run(userId, courseId, lessonId);
-    }
+        `
+      )
+      .run(userId, courseId, lessonId);
+  }
 
-    selectLessonCompleted(userId: number, lessonId: number) {
-        return this.db.prepare(/* sql */ `
+  selectLessonCompleted(userId: number, lessonId: number) {
+    return this.db
+      .prepare(
+        /* sql */ `
             SELECT "completed" FROM "lessons_completed"
             WHERE "user_id" = ? AND "lesson_id" = ?;
-        `).get(userId, lessonId) as { completed: string } | undefined;
-    }
+        `
+      )
+      .get(userId, lessonId) as { completed: string } | undefined;
+  }
 
-    selectLessonsCompleted(userId: number, courseId: number) {
-        return this.db.prepare(/* sql */ `
+  selectLessonsCompleted(userId: number, courseId: number) {
+    return this.db
+      .prepare(
+        /* sql */ `
             SELECT "lesson_id", "completed" FROM "lessons_completed"
             WHERE "user_id" = ? AND "course_id" = ?;
-        `).all(userId, courseId) as { lesson_id: number, completed: string }[];
-    }
+        `
+      )
+      .all(userId, courseId) as { lesson_id: number; completed: string }[];
+  }
 
-    deleteLessonCompleted(userId: number, courseId: number) {
-        return this.db.prepare(/* sql */ `
+  deleteLessonCompleted(userId: number, courseId: number) {
+    return this.db
+      .prepare(
+        /* sql */ `
             DELETE FROM "lessons_completed"
             WHERE "user_id" = ? AND "course_id" = ?;
-        `).run(userId, courseId);
-    }
+        `
+      )
+      .run(userId, courseId);
+  }
 
-    selectProgress(userId: number, courseId: number) {
-        return this.db.prepare(/* sql */ `
+  deleteLessonCompletedByLessonId(lessonId: number) {
+    return this.db
+      .prepare(
+        /* sql */ `
+            DELETE FROM "lessons_completed" WHERE "lesson_id" = ?;
+        `
+      )
+      .run(lessonId);
+  }
+
+  deleteLessonCompletedByCourseId(courseId: number) {
+    return this.db
+      .prepare(
+        /* sql */ `
+            DELETE FROM "lessons_completed" WHERE "course_id" = ?;
+        `
+      )
+      .run(courseId);
+  }
+
+  selectProgress(userId: number, courseId: number) {
+    return this.db
+      .prepare(
+        /* sql */ `
             SELECT "l"."id", "lc"."completed" 
             FROM "lessons" as "l" 
             LEFT JOIN "lessons_completed" as "lc"
             ON "l"."id" = "lc"."lesson_id" AND "lc"."user_id" = ?
             WHERE "l"."course_id" = ?
-        `).all(userId, courseId) as { id: number, completed: string }[];
-    }
+        `
+      )
+      .all(userId, courseId) as { id: number; completed: string }[];
+  }
 
-    insertCertificate(userId: number, courseId: number) {
-        return this.db.prepare(/* sql */ `
+  insertCertificate(userId: number, courseId: number) {
+    return this.db
+      .prepare(
+        /* sql */ `
             INSERT OR IGNORE INTO "certificates"
             ("user_id", "course_id")
             VALUES (?, ?) RETURNING "id";
-        `).get(userId, courseId) as { id: string } | undefined;
-    }
+        `
+      )
+      .get(userId, courseId) as { id: string } | undefined;
+  }
 
-    selectCertificates(userId: number) {
-        return this.db.prepare(/* sql */ `
+  selectCertificates(userId: number) {
+    return this.db
+      .prepare(
+        /* sql */ `
             SELECT * FROM "certificates_full" WHERE "user_id" = ?
-        `).all(userId) as CertificateData[];
-    }
+        `
+      )
+      .all(userId) as CertificateData[];
+  }
 
-    selectCertificate(certificateId: string) {
-        return this.db.prepare(/* sql */ `
+  selectCertificate(certificateId: string) {
+    return this.db
+      .prepare(
+        /* sql */ `
             SELECT * FROM "certificates_full" WHERE "id" = ?
-        `).get(certificateId) as CertificateData | undefined;
-    }
+        `
+      )
+      .get(certificateId) as CertificateData | undefined;
+  }
+
+  deleteAllLessons(courseId: number) {
+    return this.db
+      .prepare(
+        /* sql */ `
+            DELETE FROM "lessons" WHERE "course_id" = ?;
+        `
+      )
+      .run(courseId);
+  }
+
+  deleteCourse(courseId: number) {
+    return this.db
+      .prepare(
+        /* sql */ `
+            DELETE FROM "courses" WHERE "id" = ?;
+        `
+      )
+      .run(courseId);
+  }
+
+  deleteLesson(lessonId: number) {
+    return this.db
+      .prepare(
+        /* sql */ `
+            DELETE FROM "lessons" WHERE "id" = ?;
+        `
+      )
+      .run(lessonId);
+  }
 }

@@ -136,7 +136,7 @@
             <p class="subtitle">Preencha seus dados</p>
             <form>
               <div class="field">
-                <label for="userame">Username</label>
+                <label for="username">Username</label>
                 <input
                   type="text"
                   name="username"
@@ -235,7 +235,9 @@
                   />
                 </div>
               </div>
-              <button type="submit">Salvar Curso</button>
+              <div class="form-actions">
+                <button type="submit">Salvar Curso</button>
+              </div>
             </form>
           </div>
         </section>
@@ -318,7 +320,9 @@
                   readonly
                 />
               </div>
-              <button type="submit">Salvar Aula</button>
+              <div class="form-actions">
+                <button type="submit">Salvar Aula</button>
+              </div>
             </form>
           </div>
         </section>
@@ -360,7 +364,9 @@
                       id="old-email"
                       placeholder="antigo@email.com"
                     />
-                    <small class="hint hidden">Email não encontrado ou inválido</small>
+                    <small class="hint hidden"
+                      >Email não encontrado ou inválido</small
+                    >
                   </div>
                   <div class="field">
                     <label for="new-email">Novo Email</label>
@@ -370,7 +376,9 @@
                       id="new-email"
                       placeholder="novo@email.com"
                     />
-                    <small class="hint hidden">Email já cadastrado ou inválido</small>
+                    <small class="hint hidden"
+                      >Email já cadastrado ou inválido</small
+                    >
                   </div>
                   <div class="field">
                     <label for="email-password">Senha</label>
@@ -436,6 +444,23 @@
           </div>
         </section>
       </main>
+
+      <!-- Modal de Confirmação -->
+      <div id="modal-confirm" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+          <h3 id="modal-title">Confirmar exclusão</h3>
+          <p id="modal-message">Tem certeza que deseja excluir este item?</p>
+          <div class="modal-actions">
+            <button type="button" class="btn-cancel" id="modal-cancel">
+              Cancelar
+            </button>
+            <button type="button" class="btn-confirm" id="modal-confirm-btn">
+              Excluir
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <style>
@@ -840,6 +865,15 @@
         color: white;
       }
 
+      .btn-delete {
+        background: var(--error);
+        border-color: var(--error);
+      }
+      .btn-delete:hover {
+        background: var(--error);
+        border-color: var(--error);
+      }
+
       /* Debug Buttons */
       .debug-btns {
         display: flex;
@@ -1024,17 +1058,67 @@
 
       .users-list li {
         display: grid;
-        grid-template-columns: 1fr 2fr;
+        grid-template-columns: 1fr 2fr auto;
         gap: 1rem;
         padding: 0.75rem 0;
         border-bottom: 1px solid var(--border);
         font-size: 0.875rem;
         color: var(--text-muted);
+        align-items: center;
       }
 
       .users-list li span:first-child {
         color: var(--text);
         font-weight: 500;
+      }
+
+      .icon-trash {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        background-color: var(--text-muted);
+        cursor: pointer;
+        transition: var(--transition);
+        -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18'/%3E%3Cpath d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/%3E%3Cpath d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/%3E%3Cline x1='10' y1='11' x2='10' y2='17'/%3E%3Cline x1='14' y1='11' x2='14' y2='17'/%3E%3C/svg%3E")
+          no-repeat center;
+        mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18'/%3E%3Cpath d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/%3E%3Cpath d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/%3E%3Cline x1='10' y1='11' x2='10' y2='17'/%3E%3Cline x1='14' y1='11' x2='14' y2='17'/%3E%3C/svg%3E")
+          no-repeat center;
+      }
+
+      .icon-trash:hover {
+        background-color: var(--error);
+      }
+
+      .btn-delete {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: transparent;
+        border: 1px solid var(--error);
+        color: var(--error);
+        padding: 0.625rem 1rem;
+        font-size: 0.875rem;
+        margin-top: 0.75rem;
+      }
+
+      .btn-delete:hover {
+        background: var(--error);
+        color: white;
+      }
+
+      .btn-delete .icon-trash {
+        background-color: currentColor;
+      }
+
+      .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+      }
+
+      .form-actions .btn-delete {
+        padding: 0.875rem 1.5rem;
+        margin-top: 0;
       }
 
       /* Pagination */
@@ -1162,6 +1246,96 @@
         display: none !important;
       }
 
+      /* Modal */
+      .modal {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.2s ease;
+      }
+
+      .modal.hidden {
+        display: none !important;
+      }
+
+      .modal-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(4px);
+      }
+
+      .modal-content {
+        position: relative;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 2rem;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: var(--shadow);
+        animation: modalSlideIn 0.25s ease;
+      }
+
+      @keyframes modalSlideIn {
+        from {
+          opacity: 0;
+          transform: scale(0.95) translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+
+      .modal-content h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .modal-content p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .modal-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+      }
+
+      .modal-actions button {
+        padding: 0.75rem 1.25rem;
+        font-size: 0.875rem;
+      }
+
+      .btn-cancel {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text);
+      }
+
+      .btn-cancel:hover {
+        background: var(--bg-hover);
+        border-color: var(--border-hover);
+      }
+
+      .btn-confirm {
+        background: var(--error);
+        border: 1px solid var(--error);
+        color: white;
+      }
+
+      .btn-confirm:hover {
+        background: #dc2626;
+        border-color: #dc2626;
+      }
+
       /* Responsive */
       @media (max-width: 640px) {
         .grid-2,
@@ -1194,6 +1368,39 @@
         const ss = String(Math.floor(seconds % 60)).padStart(2, '0');
         return `${mm}:${ss}`;
       };
+
+      function showConfirmModal(title, message) {
+        return new Promise((resolve) => {
+          const modal = document.getElementById('modal-confirm');
+          const modalTitle = document.getElementById('modal-title');
+          const modalMessage = document.getElementById('modal-message');
+          const btnCancel = document.getElementById('modal-cancel');
+          const btnConfirm = document.getElementById('modal-confirm-btn');
+
+          modalTitle.textContent = title;
+          modalMessage.textContent = message;
+          modal.classList.remove('hidden');
+
+          const cleanup = () => {
+            modal.classList.add('hidden');
+            btnCancel.removeEventListener('click', handleCancel);
+            btnConfirm.removeEventListener('click', handleConfirm);
+          };
+
+          const handleCancel = () => {
+            cleanup();
+            resolve(false);
+          };
+
+          const handleConfirm = () => {
+            cleanup();
+            resolve(true);
+          };
+
+          btnCancel.addEventListener('click', handleCancel);
+          btnConfirm.addEventListener('click', handleConfirm);
+        });
+      }
 
       const routes = document.querySelectorAll('section[data-role]');
       const navs = document.querySelectorAll('nav[data-role]');
@@ -1453,8 +1660,12 @@
 
           // Form: Alterar Email
           const formEmail = route.querySelector('#form-email');
-          const oldEmailField = formEmail?.querySelector('#old-email')?.closest('.field');
-          const newEmailField = formEmail?.querySelector('#new-email')?.closest('.field');
+          const oldEmailField = formEmail
+            ?.querySelector('#old-email')
+            ?.closest('.field');
+          const newEmailField = formEmail
+            ?.querySelector('#new-email')
+            ?.closest('.field');
 
           formEmail?.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1486,11 +1697,17 @@
               badge.textContent = err.message || 'Erro';
               badge.className = 'fail';
               // Erros do email antigo
-              if (errorTitle === 'Old email not found' || errorTitle === 'invalid email') {
+              if (
+                errorTitle === 'Old email not found' ||
+                errorTitle === 'invalid email'
+              ) {
                 showFieldError(oldEmailField, true);
               }
               // Erros do email novo
-              if (errorTitle === 'New email already exists' || errorTitle === 'invalid email') {
+              if (
+                errorTitle === 'New email already exists' ||
+                errorTitle === 'invalid email'
+              ) {
                 showFieldError(newEmailField, true);
               }
             } finally {
@@ -1501,9 +1718,9 @@
 
           // Form: Alterar Senha
           const formPassword = route.querySelector('#form-password');
-          const newPasswordField = formPassword?.querySelector(
-            '#new-password'
-          )?.closest('.field');
+          const newPasswordField = formPassword
+            ?.querySelector('#new-password')
+            ?.closest('.field');
 
           formPassword?.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1530,7 +1747,10 @@
               badge.className = 'fail';
               if (err.message === 'invalid password' || status === 422) {
                 newPasswordField?.classList.add('error');
-                setTimeout(() => newPasswordField?.classList.remove('error'), 3000);
+                setTimeout(
+                  () => newPasswordField?.classList.remove('error'),
+                  3000
+                );
               }
             } finally {
               formPassword.appendChild(badge);
@@ -1543,6 +1763,7 @@
           getData('/lms/courses', (courses) => {
             const render = route.querySelector('.render');
             const form = route.querySelector('form');
+            const formActions = form.querySelector('.form-actions');
             let selectedCourse = null;
 
             const select = document.createElement('select');
@@ -1551,16 +1772,48 @@
               select.innerHTML += `<option value="${i}">${course.slug}</option>`;
             });
 
+            const deleteBtn = document.createElement('button');
+            deleteBtn.type = 'button';
+            deleteBtn.className = 'btn-delete hidden';
+            deleteBtn.innerHTML =
+              '<icon-trash class="icon-trash"></icon-trash> Excluir';
+
             select.addEventListener('change', () => {
               if (select.value === '') {
                 selectedCourse = null;
                 form.reset();
+                deleteBtn.classList.add('hidden');
               } else {
                 selectedCourse = courses[select.value];
                 Object.keys(selectedCourse).forEach((key) => {
                   const input = form.querySelector(`[name="${key}"]`);
                   if (input) input.value = selectedCourse[key];
                 });
+                deleteBtn.classList.remove('hidden');
+              }
+            });
+
+            deleteBtn.addEventListener('click', async () => {
+              if (!selectedCourse) return;
+
+              const confirmed = await showConfirmModal(
+                'Excluir Curso',
+                `Deseja realmente excluir o curso "${selectedCourse.slug}"?`
+              );
+              if (!confirmed) return;
+
+              try {
+                const response = await fetch(
+                  `/lms/course/delete/${selectedCourse.id}`,
+                  {
+                    method: 'DELETE',
+                  }
+                );
+                const body = await response.json();
+                if (!response.ok) throw new Error(body?.title || 'Erro');
+                location.reload();
+              } catch (err) {
+                alert(err.message || 'Erro ao deletar curso');
               }
             });
 
@@ -1601,6 +1854,7 @@
 
             render.innerHTML = '';
             render.appendChild(select);
+            formActions.insertBefore(deleteBtn, formActions.firstChild);
           });
         },
 
@@ -1608,7 +1862,15 @@
           const render = route.querySelector('.render');
           const form = route.querySelector('form');
           const courseSelect = form.querySelector('#course-slug');
+          const formActions = form.querySelector('.form-actions');
           let selectedLesson = null;
+
+          const deleteBtn = document.createElement('button');
+          deleteBtn.type = 'button';
+          deleteBtn.className = 'btn-delete hidden';
+          deleteBtn.innerHTML =
+            '<icon-trash class="icon-trash"></icon-trash> Excluir';
+          formActions.insertBefore(deleteBtn, formActions.firstChild);
 
           // Buscar cursos para popular o select
           getData('/lms/courses', (courses) => {
@@ -1635,6 +1897,7 @@
               if (select.value === '') {
                 selectedLesson = null;
                 form.reset();
+                deleteBtn.classList.add('hidden');
                 // Restaurar opções do select de cursos
                 courseSelect.innerHTML =
                   '<option value="">Selecione o curso...</option>';
@@ -1651,6 +1914,31 @@
                   const input = form.querySelector(`[name="${key}"]`);
                   if (input) input.value = selectedLesson[key];
                 });
+                deleteBtn.classList.remove('hidden');
+              }
+            });
+
+            deleteBtn.addEventListener('click', async () => {
+              if (!selectedLesson) return;
+
+              const confirmed = await showConfirmModal(
+                'Excluir Aula',
+                `Deseja realmente excluir a aula "${selectedLesson.slug}"?`
+              );
+              if (!confirmed) return;
+
+              try {
+                const response = await fetch(
+                  `/lms/lesson/delete/${selectedLesson.id}`,
+                  {
+                    method: 'DELETE',
+                  }
+                );
+                const body = await response.json();
+                if (!response.ok) throw new Error(body?.title || 'Erro');
+                location.reload();
+              } catch (err) {
+                alert(err.message || 'Erro ao deletar aula');
               }
             });
 
@@ -1746,6 +2034,11 @@
             <li>
               <span>${esc(user.name)}</span>
               <span>${esc(user.email)}</span>
+              <span>
+                <icon-trash class="icon-trash" data-email="${esc(
+                  user.email
+                )}"></icon-trash>
+              </span>
             </li>
           `
             )
@@ -1768,6 +2061,30 @@
             form.requestSubmit();
           });
         });
+
+        // Handler para deletar usuário
+        render.querySelectorAll('.icon-trash').forEach((icon) => {
+          icon.addEventListener('click', async () => {
+            const email = icon.dataset.email;
+
+            const confirmed = await showConfirmModal(
+              'Excluir Usuário',
+              `Deseja realmente excluir o usuário ${email}?`
+            );
+            if (!confirmed) return;
+
+            try {
+              const response = await fetch(`/auth/user/delete/${email}`, {
+                method: 'DELETE',
+              });
+              const body = await response.json();
+              if (!response.ok) throw new Error(body?.title || 'Erro');
+              form.requestSubmit(); // Recarrega a lista
+            } catch (err) {
+              alert(err.message || 'Erro ao deletar usuário');
+            }
+          });
+        });
       }
 
       // Form Handler
@@ -1780,16 +2097,16 @@
       }
 
       function showPasswordError(form, show = true) {
-        const passwordField = form.querySelector(
-          'input[type="password"]'
-        )?.closest('.field');
+        const passwordField = form
+          .querySelector('input[type="password"]')
+          ?.closest('.field');
         showFieldError(passwordField, show);
       }
 
       function showEmailError(form, show = true) {
-        const emailField = form.querySelector(
-          'input[type="email"]'
-        )?.closest('.field');
+        const emailField = form
+          .querySelector('input[type="email"]')
+          ?.closest('.field');
         showFieldError(emailField, show);
       }
 
@@ -1819,12 +2136,18 @@
             badge.textContent = body?.title || 'Erro';
             badge.className = 'fail';
             // Erros de senha
-            if (body?.title === 'invalid password' || response?.status === 422) {
+            if (
+              body?.title === 'invalid password' ||
+              response?.status === 422
+            ) {
               showPasswordError(form, true);
             }
             // Erros de email/login
-            if (body?.title === 'invalid email' || 
-                body?.title === 'User not found, please check your email and password') {
+            if (
+              body?.title === 'invalid email' ||
+              body?.title ===
+                'User not found, please check your email and password'
+            ) {
               showEmailError(form, true);
             }
           } finally {

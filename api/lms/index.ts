@@ -82,7 +82,9 @@ export class LmsApi extends Api {
       const { slug } = req.params;
       const { title, description, lessons, hours } = {
         title: req.body.title ? v.string(req.body.title) : undefined,
-        description: req.body.description ? v.string(req.body.description) : undefined,
+        description: req.body.description
+          ? v.string(req.body.description)
+          : undefined,
         lessons: req.body.lessons ? v.number(req.body.lessons) : undefined,
         hours: req.body.hours ? v.number(req.body.hours) : undefined,
       };
@@ -118,7 +120,9 @@ export class LmsApi extends Api {
         title: req.body.title ? v.string(req.body.title) : undefined,
         seconds: req.body.seconds ? v.number(req.body.seconds) : undefined,
         video: req.body.video ? v.string(req.body.video) : undefined,
-        description: req.body.description ? v.string(req.body.description) : undefined,
+        description: req.body.description
+          ? v.string(req.body.description)
+          : undefined,
         order: req.body.order ? v.number(req.body.order) : undefined,
         free: req.body.free !== undefined ? v.number(req.body.free) : undefined,
       };
@@ -273,6 +277,36 @@ export class LmsApi extends Api {
       }
       res.status(200).json(certificate);
     },
+    deleteCourse: (req, res) => {
+      if (!req.session) throw new RouteError('Unauthorized', 401);
+      const courseId = v.number(req.params.courseId);
+      if (!courseId) {
+        throw new RouteError('Course ID is required', 400);
+      }
+
+      this.query.deleteLessonCompletedByCourseId(courseId);
+      this.query.deleteAllLessons(courseId);
+
+      const deleteCourse = this.query.deleteCourse(courseId);
+      if (deleteCourse.changes === 0) {
+        throw new RouteError('Error deleting course', 400);
+      }
+      res.status(200).json({ title: 'Course deleted' });
+    },
+
+    deleteLesson: (req, res) => {
+      if (!req.session) throw new RouteError('Unauthorized', 401);
+      const lessonId = v.number(req.params.lessonId);
+      if (!lessonId) {
+        throw new RouteError('Lesson ID is required', 400);
+      }
+      this.query.deleteLessonCompletedByLessonId(lessonId);
+      const deleteLesson = this.query.deleteLesson(lessonId);
+      if (deleteLesson.changes === 0) {
+        throw new RouteError('Error deleting lesson', 400);
+      }
+      res.status(200).json({ title: 'Lesson deleted' });
+    },
   } satisfies Api['handlers'];
 
   table(): void {
@@ -294,6 +328,11 @@ export class LmsApi extends Api {
     this.router.delete('/lms/course/reset', this.handlers.resetCourse, [
       this.auth.guard('user'),
     ]);
+    this.router.delete(
+      '/lms/course/delete/:courseId',
+      this.handlers.deleteCourse,
+      [this.auth.guard('admin')]
+    );
 
     // Lessons
     this.router.get('/lms/lessons', this.handlers.getLessons, [
@@ -314,6 +353,11 @@ export class LmsApi extends Api {
       '/lms/lesson/completed',
       this.handlers.postLessonCompleted,
       [this.auth.guard('user')]
+    );
+    this.router.delete(
+      '/lms/lesson/delete/:lessonId',
+      this.handlers.deleteLesson,
+      [this.auth.guard('admin')]
     );
 
     //certificates

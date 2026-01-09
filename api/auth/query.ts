@@ -210,4 +210,14 @@ export class AuthQuery extends Query {
       )
       .get(email);
   }
+
+  deleteUser(userId: number) {
+    return this.db
+      .query(
+        /* sql */ `
+            DELETE FROM "users" WHERE "id" = ?;
+        `
+      )
+      .run(userId);
+  }
 }

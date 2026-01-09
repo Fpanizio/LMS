@@ -69,6 +69,17 @@ async function seedUsers() {
   const db = new DatabaseSync('./lms.sqlite');
   const passwordService = new Password('segredo');
 
+  // Criar admin fixo
+  const adminPassword = await passwordService.hash('Admin123456');
+  try {
+    db.prepare(
+      `INSERT INTO users (name, username, email, role, password_hash) VALUES (?, ?, ?, ?, ?)`
+    ).run('Administrador', 'admin', 'admin@admin.com', 'admin', adminPassword);
+    console.log('👑 Admin criado: admin@admin.com / Admin123456\n');
+  } catch {
+    console.log('👑 Admin já existe: admin@admin.com\n');
+  }
+
   const users = generateUsers(30);
 
   console.log('🌱 Seeding 30 users...\n');
