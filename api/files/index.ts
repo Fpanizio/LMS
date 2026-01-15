@@ -7,15 +7,17 @@ import { checkEtag, LimitBytes, mimeType } from './utils.ts';
 import { rename, rm, stat, writeFile } from 'node:fs/promises';
 import { RouteError } from '../../core/utils/route-error.ts';
 import { randomUUID } from 'node:crypto';
+import { AuthMiddleware } from '../auth/middleware/auth.ts';
+import { FILES_PATH } from '../../env.ts';
 
 const MAX_SIZE = 150 * 1024 * 1024; // 150MB
-const FILES_DIR = './public/files';
 
 export class FilesApi extends Api {
+  auth = new AuthMiddleware(this.core);
   handlers = {
-    sendFile: async (req, res) => {
+    publicFile: async (req, res) => {
       const name = v.file(req.params.filename);
-      const filePath = path.join(FILES_DIR, name);
+      const filePath = path.join(FILES_PATH, 'public', name);
       const ext = path.extname(name);
       let st;
       try {
@@ -66,16 +68,24 @@ export class FilesApi extends Api {
       }
 
       const name = v.file(req.headers['x-filename']);
+      const visibility =
+        v.o.string(req.headers['x-visibility']) === 'public'
+          ? 'public'
+          : 'private';
       const now = Date.now();
       const ext = path.extname(name);
       const filename = `${name.replace(ext, '')}-${now}${randomUUID()}${ext}`;
-      const tempPath = path.join(FILES_DIR, `${randomUUID()}.temp`);
-      const writePath = path.join(FILES_DIR, filename);
+      const tempPath = path.join(
+        FILES_PATH,
+        visibility,
+        `${randomUUID()}.temp`
+      );
+      const writePath = path.join(FILES_PATH, visibility, filename);
       const writeStream = createWriteStream(tempPath, { flags: 'wx' });
       try {
         await pipeline(req, LimitBytes(MAX_SIZE), writeStream);
         await rename(tempPath, writePath);
-        res.status(201).json({ path: `files/${filename}` });
+        res.status(201).json({ path: `files/${visibility}/${filename}` });
       } catch (error) {
         if (error instanceof RouteError) {
           throw new RouteError(error.message, error.status);
@@ -86,9 +96,19 @@ export class FilesApi extends Api {
         await rm(tempPath, { force: true }).catch(() => {});
       }
     },
+    privateFile: async (req, res) => {
+      const name = v.file(req.params.filename);
+      res.setHeader('X-Accel-Redirect', name);
+      res.status(204).end();
+    },
   } satisfies Api['handlers'];
   routes(): void {
-    this.router.get('/files/:filename', this.handlers.sendFile);
-    this.router.post('/files', this.handlers.uploadFile);
+    this.router.get('/files/private/:filename', this.handlers.privateFile, [
+      this.auth.guard('user'),
+    ]);
+    this.router.get('/files/public/:filename', this.handlers.publicFile, [
+      this.auth.guard('user'),
+    ]);
+    this.router.post('/files/upload', this.handlers.uploadFile);
   }
 }

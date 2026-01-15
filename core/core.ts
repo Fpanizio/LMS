@@ -11,7 +11,9 @@ import { bodyJson } from "./middleware/body-json.ts";
 import { RouteError } from "./utils/route-error.ts";
 import { formatDate } from "./utils/format-data.ts";
 import { Database } from "./database.ts";
+import { DB_PATH } from "../env.ts";
 
+DB_PATH
 export class Core {
   router: Router;
   server: Server;
@@ -19,7 +21,7 @@ export class Core {
   constructor() {
     this.router = new Router();
     this.router.use([bodyJson]);
-    this.db = new Database("./lms.sqlite");
+    this.db = new Database(DB_PATH);
     this.server = createServer(this.handler);
   }
   handler = async (request: IncomingMessage, response: ServerResponse) => {

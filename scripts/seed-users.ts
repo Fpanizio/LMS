@@ -66,7 +66,7 @@ function generateUsers(count: number): UserSeed[] {
 }
 
 async function seedUsers() {
-  const db = new DatabaseSync('./lms.sqlite');
+  const db = new DatabaseSync(process.env.DB_PATH || '/db/db.sqlite');
   const passwordService = new Password('segredo');
 
   // Criar admin fixo
