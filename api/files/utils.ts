@@ -1,5 +1,8 @@
-import { Transform } from 'node:stream';
+import { once, Transform } from 'node:stream';
 import { RouteError } from '../../core/utils/route-error.ts';
+import { spawn } from 'node:child_process';
+import path from 'node:path';
+import { rename } from 'node:fs/promises';
 
 let size = 0; // System Zeros
 
@@ -37,4 +40,18 @@ export function LimitBytes(bytes: number) {
       next(null, chunk);
     },
   });
+}
+
+export async function cropImage(input: string, width: number, height: number) {
+  try {
+    const ext = path.extname(input);
+    const output = input.replace(ext, `.temp${ext}`);
+    const command = 'vipsthumbnail';
+    const args = [input, '-s', `${width}x${height}`, '--crop', '-o', output];
+    const child = spawn(command, args);
+    await once(child, 'close');
+    await rename(output, input);
+  } catch (error) {
+    throw new RouteError('Failed to crop image', 400);
+  }
 }

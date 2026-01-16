@@ -3,7 +3,7 @@ import { createReadStream, createWriteStream } from 'node:fs';
 import { pipeline } from 'node:stream/promises';
 import { v } from '../../core/utils/validate.ts';
 import path from 'node:path';
-import { checkEtag, LimitBytes, mimeType } from './utils.ts';
+import { checkEtag, cropImage, LimitBytes, mimeType } from './utils.ts';
 import { rename, rm, stat, writeFile } from 'node:fs/promises';
 import { RouteError } from '../../core/utils/route-error.ts';
 import { randomUUID } from 'node:crypto';
@@ -85,6 +85,9 @@ export class FilesApi extends Api {
       try {
         await pipeline(req, LimitBytes(MAX_SIZE), writeStream);
         await rename(tempPath, writePath);
+        if (ext === '.jpg' || ext === '.jpeg') {
+          await cropImage(writePath, 320, 200);
+        }
         res.status(201).json({ path: `files/${visibility}/${filename}` });
       } catch (error) {
         if (error instanceof RouteError) {

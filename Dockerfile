@@ -1,6 +1,6 @@
 FROM node:24-alpine AS base
 WORKDIR /app
-RUN apk --no-cache add curl
+RUN apk --no-cache add vips-tools
 
 FROM base AS dev
 ENV NODE_ENV=development
