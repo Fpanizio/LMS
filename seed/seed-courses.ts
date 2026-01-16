@@ -1,4 +1,4 @@
-import { DatabaseSync } from 'node:sqlite';
+import { initDatabase } from './init-db.ts';
 
 interface Course {
   slug: string;
@@ -649,7 +649,7 @@ const COURSES: Course[] = [
 ];
 
 function seedCourses() {
-  const db = new DatabaseSync(process.env.DB_PATH || '/db/db.sqlite');
+  const db = initDatabase(process.env.DB_PATH || '/db/db.sqlite');
 
   console.log('🌱 Seeding courses and lessons...\n');
   console.log('─'.repeat(80));

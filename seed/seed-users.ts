@@ -1,5 +1,5 @@
 import { Password } from '../api/auth/utils/password.ts';
-import { DatabaseSync } from 'node:sqlite';
+import { initDatabase } from './init-db.ts';
 import { randomBytes } from 'node:crypto';
 
 const FIRST_NAMES = [
@@ -66,7 +66,7 @@ function generateUsers(count: number): UserSeed[] {
 }
 
 async function seedUsers() {
-  const db = new DatabaseSync(process.env.DB_PATH || '/db/db.sqlite');
+  const db = initDatabase(process.env.DB_PATH || '/db/db.sqlite');
   const passwordService = new Password('segredo');
 
   // Criar admin fixo
@@ -75,9 +75,20 @@ async function seedUsers() {
     db.prepare(
       `INSERT INTO users (name, username, email, role, password_hash) VALUES (?, ?, ?, ?, ?)`
     ).run('Administrador', 'admin', 'admin@admin.com', 'admin', adminPassword);
-    console.log('👑 Admin criado: admin@admin.com / Admin123456\n');
+    console.log('👑 Admin criado: admin@admin.com / Admin123456');
   } catch {
-    console.log('👑 Admin já existe: admin@admin.com\n');
+    console.log('👑 Admin já existe: admin@admin.com');
+  }
+
+  // Criar user fixo (para botão debug)
+  const userPassword = await passwordService.hash('Aa123456789');
+  try {
+    db.prepare(
+      `INSERT INTO users (name, username, email, role, password_hash) VALUES (?, ?, ?, ?, ?)`
+    ).run('Felipe Panizio', 'fpanizio', 'fpanizio10@gmail.com', 'user', userPassword);
+    console.log('👤 User criado: fpanizio10@gmail.com / Aa123456789\n');
+  } catch {
+    console.log('👤 User já existe: fpanizio10@gmail.com\n');
   }
 
   const users = generateUsers(30);

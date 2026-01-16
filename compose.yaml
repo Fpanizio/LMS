@@ -12,8 +12,8 @@ services:
       - email_key
       - pepper
     environment:
-      EMAIL_KEY_FILE: run/secrets/email_key
-      PEPPER_FILE: run/secrets/pepper
+      EMAIL_KEY_FILE: /run/secrets/email_key
+      PEPPER_FILE: /run/secrets/pepper
     logging:
       driver: local
       options:
@@ -52,6 +52,6 @@ volumes:
 
 secrets:
   email_key:
-    file: .secrets/email_key.txt
+    file: secrets/email_key.txt
   pepper:
-    file: .secrets/pepper.txt
+    file: secrets/pepper.txt

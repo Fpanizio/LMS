@@ -5,7 +5,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node --watch index.ts",
-    "client": "node --watch client.mjs"
+    "client": "node --watch client.mjs",
+    "seed": "node seed/seed-courses.ts && node seed/seed-users.ts",
+    "seed:courses": "node seed/seed-courses.ts",
+    "seed:users": "node seed/seed-users.ts"
   },
   "keywords": [],
   "author": "",

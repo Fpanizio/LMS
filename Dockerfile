@@ -7,6 +7,9 @@ COPY seed/db/ /db/
 
 FROM base AS dev
 ENV NODE_ENV=development
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["node", "--watch", "index.ts"]
 
 FROM base AS prod
@@ -14,4 +17,7 @@ ENV NODE_ENV=production
 COPY package*.json .
 RUN npm ci --omit=dev
 COPY . .
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["node", "index.ts"]
