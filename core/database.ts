@@ -1,5 +1,4 @@
 import { DatabaseSync, type StatementSync } from 'node:sqlite';
-
 export class Database extends DatabaseSync {
   queries: Record<string, StatementSync>;
 
@@ -22,5 +21,4 @@ export class Database extends DatabaseSync {
     }
     return this.queries[sql];
   }
-
 }

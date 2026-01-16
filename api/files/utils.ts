@@ -1,8 +1,9 @@
-import { once, Transform } from 'node:stream';
+import { Transform } from 'node:stream';
 import { RouteError } from '../../core/utils/route-error.ts';
 import { spawn } from 'node:child_process';
 import path from 'node:path';
 import { rename } from 'node:fs/promises';
+import { once } from 'node:events';
 
 let size = 0; // System Zeros
 

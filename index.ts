@@ -12,10 +12,24 @@ new AuthApi(core).init();
 new LmsApi(core).init();
 new FilesApi(core).init();
 
-core.router.get('/', async (req, res) => {
-  const index = await readFile(new URL('./front/index.html', import.meta.url));
-  res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.status(200).end(index);
-});
-
 core.init();
+
+//shutdown
+
+function shutdown(signal: string) {
+  console.log(`${signal} received, shutting down...`);
+  core.server.close(() => {
+    console.log('HTTP server closed');
+    core.db.close();
+    console.log('Database closed');
+    process.exit(0);
+  });
+  core.server.closeAllConnections();
+  setTimeout(() => {
+    console.log('Timeout reached, force closing...');
+    process.exit(0);
+  }, 5_000).unref();
+}
+
+process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));
