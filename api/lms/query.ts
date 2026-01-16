@@ -33,7 +33,7 @@ type LessonUpdate = Partial<
   Omit<LessonData, 'id' | 'course_id' | 'created'>
 > & { id: number };
 
-type CertificateData = {
+export type CertificateData = {
   id: string;
   name: string;
   title: string;

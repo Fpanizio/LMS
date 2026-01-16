@@ -4,6 +4,7 @@ import { RouteError } from '../../core/utils/route-error.ts';
 import { LmsQuery } from './query.ts';
 import { AuthMiddleware } from '../auth/middleware/auth.ts';
 import { v } from '../../core/utils/validate.ts';
+import { generateCertificate } from './utils/certificate.ts';
 
 export class LmsApi extends Api {
   query = new LmsQuery(this.db);
@@ -275,7 +276,10 @@ export class LmsApi extends Api {
       if (!certificate) {
         throw new RouteError('Certificate not found', 404);
       }
-      res.status(200).json(certificate);
+
+      const pdf = generateCertificate(certificate);
+      res.setHeader('content-type', 'application/pdf');
+      res.status(200).end(pdf);
     },
     deleteCourse: (req, res) => {
       if (!req.session) throw new RouteError('Unauthorized', 401);

@@ -25,9 +25,14 @@ This project is a hands-on study developed during the Origamid Node.js course. T
 - Integrated SQLite database
 - API system with abstract classes (CoreProvider, Api)
 - Session-based authentication system
-- File upload with streaming
+- File upload with streaming (public/private)
 - Data validation
 - Full CRUD for courses and lessons
+- PDF certificate generation
+- User search with pagination
+- Email/password update via frontend
+- User/course/lesson deletion with confirmation
+- Docker + Caddy deployment (automatic HTTPS)
 
 ---
 
@@ -75,7 +80,7 @@ LMS/
 │   ├── auth/
 │   │   ├── index.ts            # Authentication API
 │   │   ├── middleware/
-│   │   │   └── auth.ts         # Auth middleware
+│   │   │   └── auth.ts         # Auth middleware (guard, optional)
 │   │   ├── query.ts            # Auth queries
 │   │   ├── services/
 │   │   │   └── session.ts      # Session service
@@ -84,14 +89,18 @@ LMS/
 │   │       ├── password.ts     # Password hash utilities
 │   │       └── utils.ts        # General auth utilities
 │   ├── files/
-│   │   ├── index.ts            # File upload API
-│   │   └── utils.ts            # Utilities (mimeTypes, ETag)
+│   │   ├── index.ts            # File upload API (public/private)
+│   │   └── utils.ts            # Utilities (mimeTypes, ETag, LimitBytes)
 │   └── lms/
 │       ├── index.ts            # Main LMS API
 │       ├── query.ts            # LMS queries
-│       └── tables.ts           # LMS table definitions
+│       ├── tables.ts           # LMS table definitions
+│       └── utils/
+│           └── certificate.ts  # PDF certificate generation
 ├── front/
-│   └── index.html              # Application frontend
+│   ├── index.html              # Application frontend
+│   ├── script.js               # Frontend logic (SPA routing)
+│   └── style.css               # Styles
 ├── core/
 │   ├── core.ts                 # Main server class
 │   ├── router.ts               # Route system
@@ -108,13 +117,20 @@ LMS/
 │       ├── parse-cookies.ts    # Cookie parsing utility
 │       ├── route-error.ts      # Custom error class
 │       └── validate.ts         # Data validation utility
-├── public/
-│   └── files/                  # Public files (uploads)
+├── db/                         # SQLite database (Docker volume)
+├── files/
+│   ├── public/                 # Public uploads (free lessons)
+│   └── private/                # Private uploads (paid lessons)
 ├── scripts/
-│   └── seed-users.ts           # Script to seed test users
+│   ├── seed-users.ts           # Script to seed test users
+│   └── seed-courses.ts         # Script to seed courses and lessons
 ├── index.ts                    # Server entry point
+├── env.ts                      # Environment variables
 ├── client.mjs                  # Test client
-├── lms.sqlite                  # SQLite database
+├── Caddyfile                   # Caddy reverse proxy config
+├── Dockerfile                  # Docker image (dev/prod targets)
+├── compose.yaml                # Docker Compose (production)
+├── compose.override.yaml       # Docker Compose (development)
 └── package.json
 ```
 
@@ -125,24 +141,60 @@ LMS/
 ### Prerequisites
 
 - Node.js 22+ (for native `node:sqlite` support)
+- Docker & Docker Compose (for containerized deployment)
 
-### Installation
+### Local Development (without Docker)
 
 ```bash
+# Install dependencies
 npm install
-```
 
-### Server (with hot-reload)
-
-```bash
+# Start server (with hot-reload)
 npm run start
-```
 
-### Test client
-
-```bash
+# Test client (optional)
 npm run client
 ```
+
+### Docker Development
+
+Uses `compose.override.yaml` for hot-reload with mounted volumes.
+
+```bash
+# Start containers (rebuilds node_modules inside container)
+docker compose up -d --build
+
+# View logs (see hot-reload in action)
+docker compose logs -f node
+
+# Seed database (first time)
+docker compose exec node node scripts/seed-users.ts
+docker compose exec node node scripts/seed-courses.ts
+```
+
+> **Note:** If you add new dependencies, run `docker compose up -d --build` to rebuild.
+
+### Docker Production
+
+Uses `compose.yaml` with Caddy for HTTPS (auto SSL).
+
+```bash
+# Create .env file
+echo "ACME_EMAIL=your@email.com
+SERVER_NAME=yourdomain.com" > .env
+
+# Build and start
+docker compose -f compose.yaml up -d --build
+
+# Seed database (first time)
+docker compose exec node node scripts/seed-users.ts
+docker compose exec node node scripts/seed-courses.ts
+```
+
+### Default Admin Credentials (after seed)
+
+- **Email:** `admin@admin.com`
+- **Password:** `Admin123456`
 
 ---
 
@@ -151,6 +203,9 @@ npm run client
 - **Node.js 22+** (native modules: `http`, `sqlite`)
 - **TypeScript**
 - **SQLite** (embedded database)
+- **jsPDF** (certificate generation)
+- **Docker** (containerization)
+- **Caddy** (reverse proxy, automatic HTTPS)
 
 ---
 
