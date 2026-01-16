@@ -6,6 +6,7 @@
 [![Node.js](https://img.shields.io/badge/Node.js-22+-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![SQLite](https://img.shields.io/badge/SQLite-Native-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 
 A mini HTTP framework built from scratch using **pure Node.js** (no Express/Fastify), with **TypeScript** and **native SQLite**.
 
@@ -32,6 +33,7 @@ This project is a hands-on study developed during the Origamid Node.js course. T
 - User search with pagination
 - Email/password update via frontend
 - User/course/lesson deletion with confirmation
+- Email system (Resend) for password reset
 - Docker + Caddy deployment (automatic HTTPS)
 
 ---
@@ -79,6 +81,8 @@ LMS/
 ├── api/
 │   ├── auth/
 │   │   ├── index.ts            # Authentication API
+│   │   ├── mail/
+│   │   │   └── mail.ts         # Email service (Resend)
 │   │   ├── middleware/
 │   │   │   └── auth.ts         # Auth middleware (guard, optional)
 │   │   ├── query.ts            # Auth queries
@@ -98,6 +102,7 @@ LMS/
 │       └── utils/
 │           └── certificate.ts  # PDF certificate generation
 ├── front/
+│   ├── favicon.svg             # Application icon
 │   ├── index.html              # Application frontend
 │   ├── script.js               # Frontend logic (SPA routing)
 │   └── style.css               # Styles
@@ -121,12 +126,17 @@ LMS/
 ├── files/
 │   ├── public/                 # Public uploads (free lessons)
 │   └── private/                # Private uploads (paid lessons)
-├── scripts/
-│   ├── seed-users.ts           # Script to seed test users
-│   └── seed-courses.ts         # Script to seed courses and lessons
+├── seed/
+│   ├── init-db.ts              # Database initialization
+│   ├── seed-courses.ts         # Script to seed courses and lessons
+│   └── seed-users.ts           # Script to seed test users
+├── secrets/
+│   ├── email_key.txt           # Resend API key
+│   └── pepper.txt              # Pepper for password hashing
 ├── index.ts                    # Server entry point
 ├── env.ts                      # Environment variables
 ├── client.mjs                  # Test client
+├── entrypoint.sh               # Docker initialization script
 ├── Caddyfile                   # Caddy reverse proxy config
 ├── Dockerfile                  # Docker image (dev/prod targets)
 ├── compose.yaml                # Docker Compose (production)
@@ -161,40 +171,52 @@ npm run client
 Uses `compose.override.yaml` for hot-reload with mounted volumes.
 
 ```bash
-# Start containers (rebuilds node_modules inside container)
+# Create secrets files
+mkdir -p secrets
+echo "test" > secrets/email_key.txt
+echo "secret" > secrets/pepper.txt
+
+# Start containers
 docker compose up -d --build
 
 # View logs (see hot-reload in action)
 docker compose logs -f node
 
-# Seed database (first time)
-docker compose exec node node scripts/seed-users.ts
-docker compose exec node node scripts/seed-courses.ts
+# Seed database (first time - automatic via entrypoint)
+docker compose exec node npm run seed
 ```
 
 > **Note:** If you add new dependencies, run `docker compose up -d --build` to rebuild.
 
 ### Docker Production
 
-Uses `compose.yaml` with Caddy for HTTPS (auto SSL).
+Uses `compose.yaml` with Caddy for HTTPS (auto SSL via Let's Encrypt).
 
 ```bash
 # Create .env file
-echo "ACME_EMAIL=your@email.com
-SERVER_NAME=yourdomain.com" > .env
+cat > .env << EOF
+ACME_EMAIL=your@email.com
+SERVER_NAME=yourdomain.com
+FROM_EMAIL=noreply@yourdomain.com
+FILES_PATH=/files
+DB_PATH=/db/lms.sqlite
+EOF
+
+# Create secrets
+mkdir -p secrets
+echo "your_resend_api_key" > secrets/email_key.txt
+echo "your_secret_pepper" > secrets/pepper.txt
 
 # Build and start
-docker compose -f compose.yaml up -d --build
-
-# Seed database (first time)
-docker compose exec node node scripts/seed-users.ts
-docker compose exec node node scripts/seed-courses.ts
+docker compose up -d --build
 ```
 
-### Default Admin Credentials (after seed)
+### Default Credentials (after seed)
 
-- **Email:** `admin@admin.com`
-- **Password:** `Admin123456`
+| User | Email | Password |
+|------|-------|----------|
+| Admin | `admin@admin.com` | `Admin123456` |
+| User | `fpanizio10@gmail.com` | `Aa123456789` |
 
 ---
 
@@ -206,6 +228,7 @@ docker compose exec node node scripts/seed-courses.ts
 - **jsPDF** (certificate generation)
 - **Docker** (containerization)
 - **Caddy** (reverse proxy, automatic HTTPS)
+- **Resend** (email sending)
 
 ---
 
