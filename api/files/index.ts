@@ -112,6 +112,8 @@ export class FilesApi extends Api {
     this.router.get('/files/public/:filename', this.handlers.publicFile, [
       this.auth.guard('user'),
     ]);
-    this.router.post('/files/upload', this.handlers.uploadFile);
+    this.router.post('/files/upload', this.handlers.uploadFile, [
+      this.auth.guard('admin'),
+    ]);
   }
 }
