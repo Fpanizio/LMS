@@ -29,6 +29,7 @@
   --border: #e0e0e0;
   --border-hover: #bdbdbd;
   --text: #1a1a1a;
+  --text-active: #ffffff;
   --text-muted: #6b7280;
   --accent: #7c3aed;
   --accent-hover: #6d28d9;
@@ -119,7 +120,7 @@ h2 {
 }
 
 .container {
-  max-width: 640px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 0 1rem 4rem;
 }
@@ -139,6 +140,18 @@ nav[data-role].ativo {
   display: flex;
 }
 
+nav[data-role='public'].ativo {
+  max-width: 640px;
+  margin: 0 auto 2rem;
+}
+
+.login, .criar-conta {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+
+
 nav a {
   flex: 1;
   text-align: center;
@@ -151,10 +164,14 @@ nav a {
   transition: var(--transition);
 }
 
-nav a:hover,
-nav a.active {
+nav a:hover {
   color: var(--text);
   background: var(--bg-hover);
+}
+
+nav a.active {
+  color: var(--text-active);
+  background: var(--accent);
 }
 
 nav a.logout {
@@ -328,6 +345,7 @@ section[data-role].ativo {
 /* Courses Grid */
 .courses-grid {
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 1rem;
 }
 
@@ -345,9 +363,20 @@ section[data-role].ativo {
   box-shadow: var(--shadow);
 }
 
-.course-card h3 {
-  font-size: 1.125rem;
+.course-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 0.5rem;
+}
+
+.course-header-row h3 {
+  font-size: 1.125rem;
+  margin-bottom: 0;
+}
+
+.course-header-row .status-dot {
+  flex-shrink: 0;
 }
 
 .course-card p {

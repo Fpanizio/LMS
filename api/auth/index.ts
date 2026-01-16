@@ -220,11 +220,11 @@ export class AuthApi extends Api {
 
       const { ok } = await this.mail.send(mailContent);
       if (!ok) {
-        // Loga erro internamente mas não expõe ao usuário (segurança)
-        console.error(`[MAIL ERROR] Failed to send reset email to: ${user.email}`);
+        console.error(
+          `[MAIL ERROR] Failed to send reset email to: ${user.email}`
+        );
       }
 
-      // Sempre retorna sucesso (não revelar se email existe ou se envio falhou)
       res.status(200).json({ title: 'verification email sent' });
     },
     passwordReset: async (req, res) => {

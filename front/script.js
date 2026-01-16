@@ -79,6 +79,13 @@ async function router() {
   const r = location.hash.replace('#', '').split('/').filter(Boolean).shift();
   const route = document.getElementById(r);
   routes.forEach((item) => item.classList.remove('ativo'));
+
+  document.querySelectorAll('nav a').forEach((link) => {
+    link.classList.remove('active');
+    const linkRoute = link.getAttribute('href')?.replace('#/', '');
+    if (linkRoute === r) link.classList.add('active');
+  });
+
   if (route) {
     const role = route.dataset.role;
     const hasAccess = user === role || (user === 'admin' && role === 'user');
@@ -93,9 +100,13 @@ async function router() {
 window.addEventListener('DOMContentLoaded', router);
 window.addEventListener('hashchange', router);
 
-async function getData(url, callback) {
+async function getData(url, callback, onError) {
   const response = await fetch(url);
   const body = await response.json();
+  if (!response.ok) {
+    if (onError) onError(body, response);
+    return;
+  }
   callback(body, response);
 }
 
@@ -138,21 +149,39 @@ const data = {
   cursos: (route) => {
     getData(`${BASE_URL}/lms/courses`, (courses) => {
       const render = route.querySelector('.render');
-      render.innerHTML = courses
-        .map(
-          (course) => `
-        <div class="course-card">
-          <h3>${esc(course.title)}</h3>
-          <p>${esc(course.description)}</p>
-          <div class="course-meta">
-            <span>📚 ${esc(course.lessons)} aulas</span>
-            <span>⏱️ ${esc(course.hours)}h</span>
+
+      const renderCourses = (completedCourseIds = []) => {
+        render.innerHTML = courses
+          .map((course) => {
+            const isCompleted = completedCourseIds.includes(course.id);
+            return `
+          <div class="course-card">
+            <div class="course-header-row">
+              <h3>${esc(course.title)}</h3>
+              <span class="status-dot ${isCompleted ? 'complete' : ''}"></span>
+            </div>
+            <p>${esc(course.description)}</p>
+            <div class="course-meta">
+              <span>📚 ${esc(course.lessons)} aulas</span>
+              <span>⏱️ ${esc(course.hours)}h</span>
+            </div>
+            <a class="btn" href="#/curso/${esc(course.slug)}">Acessar Curso</a>
           </div>
-          <a class="btn" href="#/curso/${esc(course.slug)}">Acessar Curso</a>
-        </div>
-      `
-        )
-        .join('');
+        `;
+          })
+          .join('');
+      };
+
+      getData(
+        `${BASE_URL}/lms/certificates`,
+        (certs) => {
+          const completedIds = Array.isArray(certs)
+            ? certs.map((c) => c.course_id)
+            : [];
+          renderCourses(completedIds);
+        },
+        () => renderCourses([])
+      );
     });
   },
 
@@ -220,10 +249,10 @@ const data = {
           <div class="video-container">
             <video preload="metadata" src="/${lesson.video}" controls></video>
           </div>
-          <nav class="lesson-nav">
+          <nav class="lesson-nav" style="display: flex; gap: 1rem; justify-content: space-between; align-items: center;">
             ${
               lesson.prev
-                ? `<a class="btn" href="#/aula/${curso}/${lesson.prev}">← Anterior</a>`
+                ? `<div style="max-width: 200px;"> <a class="btn" href="#/aula/${curso}/${lesson.prev}">← Anterior</a></div>`
                 : '<span></span>'
             }
             ${
@@ -233,7 +262,7 @@ const data = {
             }
             ${
               lesson.next
-                ? `<a class="btn" href="#/aula/${curso}/${lesson.next}">Próxima →</a>`
+                ? `<div style="max-width: 200px;"> <a class="btn" href="#/aula/${curso}/${lesson.next}">Próxima →</a></div>`
                 : '<span></span>'
             }
           </nav>

@@ -350,9 +350,9 @@ export class LmsApi extends Api {
     ]);
     this.router.get(
       '/lms/lesson/:courseSlug/:lessonSlug',
-      this.handlers.getLesson
-    ),
-      [this.auth.optional];
+      this.handlers.getLesson,
+      [this.auth.optional]
+    );
     this.router.post(
       '/lms/lesson/completed',
       this.handlers.postLessonCompleted,
