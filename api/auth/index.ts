@@ -6,12 +6,13 @@ import { COOKIE_SID_KEY, SessionService } from './services/session.ts';
 import { AuthMiddleware } from './middleware/auth.ts';
 import { Password } from './utils/password.ts';
 import { v } from '../../core/utils/validate.ts';
+import { PEPPER } from '../../env.ts';
 
 export class AuthApi extends Api {
   query = new AuthQuery(this.db);
   session = new SessionService(this.core);
   auth = new AuthMiddleware(this.core);
-  password = new Password('segredo');
+  password = new Password(PEPPER);
 
   handlers = {
     postUser: async (req, res) => {
